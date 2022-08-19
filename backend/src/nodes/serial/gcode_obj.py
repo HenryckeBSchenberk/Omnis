@@ -51,10 +51,10 @@ class SerialGcodeOBJ(Serial):
             is_gcode=True,
             _id=_id,
         )
-        self.is_open = True
+        # self.is_open = True
         self.resumed = Event()
         self.was_stopped = Event()
-        self.timeout = 50 # Max time to wait for a response from the machine (G28 will take a while)
+        self.gcode_timeout = 50 # Max time to wait for a response from the machine (G28 will take a while)
         self.resumed_permission = ["stop", "kill", "quick_stop", "resume"]
         self.__status = {"jog_position":{'X':0, 'Y':0, 'Z':0, 'A':0, 'B':0, 'C':0}}
         self.resume()
@@ -84,7 +84,7 @@ class SerialGcodeOBJ(Serial):
     def G28(self, axis=[]):
         self.super_send("G28" +' '.join(axis), echo=True)
         t0 = timer()
-        while self.resumed.is_set() and ((timer()-t0) < self.timeout) and not self.M119({name.upper():'TRIGGERED' for name in axis}):
+        while self.resumed.is_set() and ((timer()-t0) < self.gcode_timeout) and not self.M119({name.upper():'TRIGGERED' for name in axis}):
             sleep(0.3)
         self.M114('R')
         return True
@@ -114,7 +114,7 @@ class SerialGcodeOBJ(Serial):
         # Send machine to the coordinate string
         self.super_send(f"G1 {cords}")
         t0 = timer()
-        while self.resumed.is_set() and ((timer()-t0) < self.timeout):
+        while self.resumed.is_set() and ((timer()-t0) < self.gcode_timeout):
                 try:
                     future = self.M114().items()
                     if future != 'FAIL': break

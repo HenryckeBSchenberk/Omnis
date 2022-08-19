@@ -62,13 +62,18 @@ class Serial(_Serial):
         _id=None,
     ) -> None:
         self._id = ObjectId(_id)
-        super().__init__(
-            port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr
-        )
+        try:
+            super().__init__(
+                port, baudrate, bytesize, parity, stopbits, timeout, xonxoff, rtscts, dsrdtr
+            )
+        except Exception:
+            self.is_open = False
+        else:
+            self.is_open = True
         self.port = port
         self.baudrate = baudrate
         self.is_gcode = is_gcode
-        self.is_open = True
+        
         self.last_value_send = None
         self.last_value_received = None
 

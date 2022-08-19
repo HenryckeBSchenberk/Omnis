@@ -1,0 +1,43 @@
+scalar DBREF_serial
+
+# type serial implements metadata {
+#   _id:  ID!
+#   img: String
+#   name: String
+#   description: String 
+#   sketch: sketch
+#   last_played: timestamptz
+#   date: timestamptz
+#   created_at: timestamptz!
+#   created_by: user!
+#   edited_by: user
+#   updated_at: timestamptz
+#   object: [object]
+# }
+
+# input reg_serial {
+#   img: String
+#   name: String
+#   description: String 
+#   sketch: DBREF_sketch
+#   object: [DBREF_object]
+# }
+
+# extend type Query {
+    # get_serial_list: [serial]
+    # get_serial_item(_id: ID!): serial
+# }
+
+extend type Mutation  {
+#   create_serial(input: reg_serial): ID
+#   update_serial(_id: ID!, input: reg_serial): ID
+#   delete_serial(_id: ID!): ID
+#   duplicate_serial(_id: ID!): ID
+  start_serial(_id: ID): Boolean
+  stop_serial:  Boolean
+  pause_serial: Boolean
+  resume_serial: Boolean
+  select_serial(_id: ID!): Boolean
+#   load_config(_id: ID!): sketch
+#   getLoadedConfig: ID!
+}
