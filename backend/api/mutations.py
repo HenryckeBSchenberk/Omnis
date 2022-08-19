@@ -9,10 +9,7 @@ from cv2 import imdecode, imwrite
 from os.path import abspath
 
 from src.nodes.camera.custom_camera import Camera
-from src.nodes.serial.custom_serial import Serial
-
 from src.manager.camera_manager import CameraManager
-from src.manager.serial_manager import SerialManager
 
 from src.utility.system.date import set_system_date
 from api import logger, auth, dbo
@@ -123,36 +120,13 @@ def setCameraProperty_resolver( _id, **kwargs):
 
 
 # *  ----------- Serial ----------- * #
-@mutation.field("createSerial")
-def createSerial_resolver( **kwargs):
-    """Create a new Serial object and return it like a payload"""
-    returns = Serial(**kwargs.get("input", {})).to_dict()
-    return returns
-
-
-@mutation.field("startSerial")
-def startSerial_resolver( _id, **kwargs):
-    """Start a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id)
-    returns = serial.to_dict()
-    return returns
-
-
-@mutation.field("stopSerial")
-def stopSerial_resolver( _id, **kwargs):
-    """Stop a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id).stop()
-    returns = serial.to_dict()
-    return returns
-
-
-@mutation.field("sendSerial")
-@auth("operator")
-def sendSerial_resolver( _id, payload, **kwargs):
-    """Communicate a serial by id and return it like a payload"""
-    serial = SerialManager.get_by_id(_id)
-    serial.send(payload)
-    return serial.to_dict()
+# @mutation.field("sendSerial")
+# @auth("operator")
+# def sendSerial_resolver( _id, payload, **kwargs):
+#     """Communicate a serial by id and return it like a payload"""
+#     serial = SerialManager.get_by_id(_id)
+#     serial.send(payload)
+#     return serial.to_dict()
 
 
 @mutation.field("syncHostTime")

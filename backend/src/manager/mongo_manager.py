@@ -37,6 +37,18 @@ def getDb():
 @exception(logger)
 def connectToMongo(database="Teste"):
     getDb()
+    for collectionName, default_value in {"users":[{'username':'admin', 'first_name':'DELETE THIS USER', 'last_name':'', 'email':'', 'level':'developer'}],
+    'serial-manager':[{
+  "_id": "6244b0ad3a8338aceae46cf1",
+  "name": "OMNIS_CNC",
+  "port": "/dev/OMNIS_OCTOPUS",
+  "baudrate": 250000,
+  "is_gcode": True,
+  "disabled": False
+}]}.items() :
+        if collectionName not in _db.list_collection_names():
+            _db.create_collection(collectionName)
+            _db.insert_many(collectionName, default_value)
 
 # @for_all_methods(exception(logger))
 class CustomEncoder(JSONEncoder):

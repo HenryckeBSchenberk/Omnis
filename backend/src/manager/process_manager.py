@@ -59,23 +59,24 @@ class ProcessObjectManager(SSPR, BaseManager):
 
     @property
     def process(self):
-        atual = self.store.get(self.selected_process_id, False)
-        if atual:
-            return atual
-        else:
-            config = dbo.find_one(self.collection, {'_id':self.selected_process_id})
-            if config:
-                self.add(Process(**config))
-                return self.process
+        if getattr(self, 'selected_process_id', False):
+            atual =  self.store.get(self.selected_process_id, False)
+            if atual:
+                return atual
             else:
-                raise KeyError("PROCESS NOT FOUND, IF EXIST TRY REBOOT")
+                config = dbo.find_one(self.collection, {'_id':self.selected_process_id})
+                if config is not None:
+                    self.add(Process(**config))
+                    return self.process
+                else:
+                    raise KeyError("PROCESS NOT FOUND, IF EXIST TRY REBOOT")
     
     @process.setter
     def process(self, _id):
         self.selected_process_id = _id
 
     def status(self):
-        return self.__status[0].status
+        return getattr(self.__status[0], 'status', {"status":"CORRUPTED DATABASE, NO PROCESS CAN BE FOUND"})
     
 
     def load(self, _id=False):

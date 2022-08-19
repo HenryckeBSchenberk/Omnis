@@ -3,15 +3,15 @@ import uvicorn
 import socket
 from api import logger, dbo
 from api.graphql_types import custom_types
+from api.mutations import mutation
 from api.queries import query
 from api.subscriptions import subscription
-from api.mutations import mutation
 
 from src.end_points import custom_video_response, Echo, Connection
 from src.nodes.base_node import BaseNode_websocket
-from src.manager.serial_manager import SerialManager
 from src.manager.camera_manager import CameraManager
 from src.manager.process_manager import ProcessManager as process
+from src.manager.serial_manager import SerialManager
 from src.manager.matrix_manager import MatrixManager as matrix
 
 from starlette.routing import Route

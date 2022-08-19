@@ -17,10 +17,13 @@ connectToMongo()
 dbo = getDb()
 
 key_context = dbo.find_one("keys")
+if key_context is None: key_context = {"path":'../.ssh/key', "pass":""}
 from cryptography.hazmat.primitives.serialization import load_ssh_private_key, load_ssh_public_key
+# try
 with open(key_context["path"], "r") as private, open(key_context["path"]+'.pub', "r") as public:
     private_key = load_ssh_private_key(private.read().encode(), key_context["pass"].encode())
     public_key =  load_ssh_public_key(public.read().encode(), key_context["pass"].encode())
+# except
 
 from src.utility.crud.user import User
 

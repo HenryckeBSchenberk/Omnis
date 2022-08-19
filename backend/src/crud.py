@@ -137,4 +137,4 @@ class SSPR(CRUD):
         raise TypeError("resume not implemented")
 
     def select(self, *args, **kwargs):
-        raise TypeError("resume not implemented")
+        raise TypeError("select not implemented")
