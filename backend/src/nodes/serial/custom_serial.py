@@ -9,8 +9,6 @@ from api import logger, exception
 from api.decorators import for_all_methods
 from threading import Lock
 import queue
-from threading import Thread
-from timeit import default_timer as timer
 
 send_lock = Lock()
 
@@ -87,8 +85,6 @@ class Serial(_Serial):
         self.__echos = queue.Queue()
         self.answers = {}
         self.__signals = queue.Queue()
-        # Thread(target=self.__command_writer, name=f"{self.name}_writer").start()
-        # Thread(target=self.__command_reader, name=f"{self.name}_reader").start()
         SerialManager.add(self)
 
     def start(self):

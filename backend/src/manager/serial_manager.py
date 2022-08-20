@@ -1,14 +1,22 @@
 from src.manager.base_manager import BaseManager
 from src.crud import SSPR
-from api import dbo
+from api import logger, auth
+from api.mutations import mutation
 
 class SerialObjectManager(SSPR, BaseManager):
     def __init__(self, alias, auth_level, collection):
         SSPR.__init__(self, alias=alias, auth_level=auth_level)
         BaseManager.__init__(self)
-        for serial in dbo.find_many(collection, {},{'_id':1}):
-            # Serial(**serial)
-            self.selected_serial_id = serial
+        
+        self.reset = (auth(auth_level))(self.reset)
+        mutation.set_field(f"reset_serial", self.reset)
+
+        self.send = (auth(auth_level))(self.send)
+        mutation.set_field(f"sendSerial", self.send)
+    
+    def add(self, *args, **kwargs):
+        super().add(*args, **kwargs)
+        self.selected_serial_id = kwargs.get('_id')
 
     def broadCast(self, message):
         for ser in self.store:
@@ -23,15 +31,22 @@ class SerialObjectManager(SSPR, BaseManager):
 
     @verify_serial
     def start(self, **kwargs):
+        logger.info(self.serial.name)
         self.serial.start()
 
     @verify_serial
     def stop(self,  **kwargs):
-        self.serial.stop()
+        self.serial.close()
 
     @verify_serial
     def reset(self, **kwargs):
-        self.serial.reset()
+        self.serial.close()
+        self.serial.start()
+
+    @verify_serial
+    def send(self, payload, **kwargs):
+        self.serial.send(payload)
+        return self.serial.to_dict()
 
     @verify_serial
     def pause(self,  **kwargs):

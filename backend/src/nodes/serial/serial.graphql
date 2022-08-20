@@ -38,6 +38,9 @@ extend type Mutation  {
   pause_serial: Boolean
   resume_serial: Boolean
   select_serial(_id: ID!): Boolean
+  reset_serial:Boolean
+  
+
 #   load_config(_id: ID!): sketch
 #   getLoadedConfig: ID!
 }
