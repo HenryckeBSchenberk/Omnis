@@ -16,11 +16,15 @@ environ.setdefault("SO", system())
 connectToMongo()
 dbo = getDb()
 
-key_context = dbo.find_one("keys")
-from cryptography.hazmat.primitives.serialization import load_ssh_private_key, load_ssh_public_key
-with open(key_context["path"], "r") as private, open(key_context["path"]+'.pub', "r") as public:
-    private_key = load_ssh_private_key(private.read().encode(), key_context["pass"].encode())
-    public_key =  load_ssh_public_key(public.read().encode(), key_context["pass"].encode())
+# key_context = dbo.find_one("keys")
+# from cryptography.hazmat.primitives.serialization import load_ssh_private_key, load_ssh_public_key
+# with open(key_context["path"], "r") as private, open(key_context["path"]+'.pub', "r") as public:
+#     private_key = load_ssh_private_key(private.read().encode(), key_context["pass"].encode())
+#     public_key =  load_ssh_public_key(public.read().encode(), key_context["pass"].encode())
+
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+private_key = Ed25519PrivateKey.generate()
+public_key = private_key.public_key()
 
 from src.utility.crud.user import User
 

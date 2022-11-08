@@ -1,0 +1,115 @@
+[{
+  "_id": {
+    "$oid": "636948b11535e272ab1748de"
+  },
+  "board": "6244b0ad3a8338aceae46cf1",
+  "name": "X",
+  "color": "red",
+  "icons": {
+    "left": {
+      "command": "G91 \n G0 X-",
+      "icon": "plus-circle"
+    },
+    "right": {
+      "command": "G91 \n G0 X",
+      "icon": "plus-circle"
+    }
+  },
+  "has_move_button": true,
+  "disable": false,
+  "unit": "mm",
+  "context_menu": [
+    {
+      "title": "Ir para o Zero",
+      "command": "G90 \n G0 x0",
+      "icon": "mdi-home"
+    },
+    {
+      "title": "Referenciar Eixo",
+      "command": "G28 X",
+      "icon": "mdi-home"
+    }
+  ],
+  "setup": {
+    "default": "original_profile",
+    "original_profile": {
+      "feed_rate": "5000"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "63694c4e1535e272ab1748df"
+  },
+  "board": "6244b0ad3a8338aceae46cf1",
+  "name": "Y",
+  "color": "green",
+  "icons": {
+    "left": {
+      "command": "G91 \n G0 X-",
+      "icon": "plus-circle"
+    },
+    "right": {
+      "command": "G91 \n G0 X",
+      "icon": "plus-circle"
+    }
+  },
+  "has_move_button": true,
+  "disable": false,
+  "unit": "mm",
+  "context_menu": [
+    {
+      "title": "Ir para o Zero",
+      "command": "G90 \n G0 Y0",
+      "icon": "mdi-home"
+    },
+    {
+      "title": "Referenciar Eixo",
+      "command": "G28 Y",
+      "icon": "mdi-home"
+    }
+  ],
+  "setup": {
+    "default": "original_profile",
+    "original_profile": {
+      "feed_rate": "5000"
+    }
+  }
+},{
+  "_id": {
+    "$oid": "63694c7a1535e272ab1748e0"
+  },
+  "board": "6244b0ad3a8338aceae46cf1",
+  "name": "Z",
+  "color": "blue",
+  "icons": {
+    "left": {
+      "command": "G91 \n G0 X-",
+      "icon": "plus-circle"
+    },
+    "right": {
+      "command": "G91 \n G0 X",
+      "icon": "plus-circle"
+    }
+  },
+  "has_move_button": true,
+  "disable": true,
+  "unit": "mm",
+  "context_menu": [
+    {
+      "title": "Ir para o Zero",
+      "command": "G90 \n G0 Z0",
+      "icon": "mdi-home"
+    },
+    {
+      "title": "Referenciar Eixo",
+      "command": "G28 X",
+      "icon": "mdi-home"
+    }
+  ],
+  "setup": {
+    "default": "original_profile",
+    "original_profile": {
+      "feed_rate": "5000"
+    }
+  }
+}]

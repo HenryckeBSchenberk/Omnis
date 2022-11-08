@@ -107,7 +107,7 @@ services:
       options:
         max-size: 50m
   host_commands:
-    profiles: ["production", "development"]
+    profiles: ["production"]
     container_name: command
     restart: unless-stopped
     image:  omnisofc/host_commands:latest

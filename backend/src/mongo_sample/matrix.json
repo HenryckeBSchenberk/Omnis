@@ -1,0 +1,44 @@
+[{
+  "_id": {
+    "$oid": "63694384ba294315e7d8be04"
+  },
+  "name": "Teste",
+  "slots": {
+    "qtd": {
+      "x": 4,
+      "y": 4
+    },
+    "margin": {
+      "x": 0,
+      "y": 0
+    },
+    "size": {
+      "x": 20,
+      "y": 20
+    }
+  },
+  "subdivisions": {
+    "qtd": {
+      "x": 1,
+      "y": 1
+    },
+    "margin": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "description": "Teste",
+  "origin": {
+    "x": 0,
+    "y": 0
+  },
+  "order": "TLR",
+  "part_number": "Teste",
+  "created_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "created_at": 1667842948.402455
+}]

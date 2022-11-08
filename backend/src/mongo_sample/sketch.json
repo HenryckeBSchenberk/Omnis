@@ -1,0 +1,2235 @@
+[{
+  "_id": {
+    "$oid": "6369436599cbe050d04cd841"
+  },
+  "parent_id": {
+    "$oid": "6369436599cbe050d04cd841"
+  },
+  "name": "Movimento_Simples",
+  "description": "Aba 0 descrição",
+  "version": 1,
+  "saved": true,
+  "duplicated": false,
+  "content": {
+    "nodes": [
+      {
+        "type": "StartNode",
+        "id": "node_16678429780260",
+        "name": "Iniciar",
+        "options": [
+          [
+            "color",
+            "#00a000"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_16678429780271",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 944,
+          "y": -100
+        },
+        "width": 200,
+        "twoColumn": false
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_16678462337674",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": true,
+                "value": "10",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": true,
+                "value": "10",
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": true,
+                "value": "500",
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_16678462337675",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_16678462337676",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_16678462337677",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_16678462337678",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_16678462337679",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_166784623376710",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_166784623376711",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_166784623376712",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_166784623376713",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_166784623376714",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_166784623376715",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1234.9018803789295,
+          "y": -100.85311028017651
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_166785030101218",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": true,
+                "value": "100",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": true,
+                "value": "100",
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": true,
+                "value": "2000",
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_166785030101219",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_166785030101220",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_166785030101221",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_166785030101222",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_166785030101223",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_166785030101224",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_166785030101225",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_166785030101226",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_166785030101227",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_166785030101228",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_166785030101229",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1538.1379581713743,
+          "y": -101.96386514388504
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "StopNode",
+        "id": "node_166785050351133",
+        "name": "Encerrar",
+        "options": [
+          [
+            "color",
+            "#ff0000"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_166785050351234",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1813.6051643711007,
+          "y": -103.07462000759361
+        },
+        "width": 200,
+        "twoColumn": false
+      }
+    ],
+    "connections": [
+      {
+        "id": "166785029717117",
+        "from": "ni_16678429780271",
+        "to": "ni_16678462337675"
+      },
+      {
+        "id": "166785030331832",
+        "from": "ni_16678462337677",
+        "to": "ni_166785030101219"
+      },
+      {
+        "id": "166785050591837",
+        "from": "ni_166785030101221",
+        "to": "ni_166785050351234"
+      }
+    ],
+    "panning": {
+      "x": -601.7716080650365,
+      "y": 364.1020129791105
+    },
+    "scaling": 0.9002886529447239
+  },
+  "created_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "created_at": 1667842989.049932,
+  "edited_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "key": {
+    "$oid": "6369436599cbe050d04cd841"
+  },
+  "updated_at": 1667850606.851965
+},{
+  "_id": {
+    "$oid": "63696156a3978d14105b0979"
+  },
+  "parent_id": {
+    "$oid": "63696156a3978d14105b0979"
+  },
+  "name": "ZigZag",
+  "description": "ZigZag descrição",
+  "version": 1,
+  "saved": true,
+  "duplicated": false,
+  "content": {
+    "nodes": [
+      {
+        "type": "StartNode",
+        "id": "node_16678429780260",
+        "name": "Iniciar",
+        "options": [
+          [
+            "color",
+            "#00a000"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_16678429780271",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 944,
+          "y": -100
+        },
+        "width": 200,
+        "twoColumn": false
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_16678462337674",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": true,
+                "value": "10",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": true,
+                "value": "10",
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": true,
+                "value": "500",
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_16678462337675",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_16678462337676",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_16678462337677",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_16678462337678",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_16678462337679",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_166784623376710",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_166784623376711",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_166784623376712",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_166784623376713",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_166784623376714",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_166784623376715",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1234.9018803789295,
+          "y": -100.85311028017651
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "StopNode",
+        "id": "node_166785050351133",
+        "name": "Encerrar",
+        "options": [
+          [
+            "color",
+            "#ff0000"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_166785050351234",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 2072.3956774708176,
+          "y": 0.5411842213748743
+        },
+        "width": 200,
+        "twoColumn": false
+      },
+      {
+        "type": "PositionAdjustmentNode",
+        "id": "node_166785079287952",
+        "name": "Ajuste de posição",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "min": "-2",
+                "max": "2"
+              },
+              {
+                "name": "Y",
+                "min": "5",
+                "max": "5"
+              }
+            ]
+          ],
+          [
+            "mode",
+            {
+              "name": "Cruz",
+              "icon": "plus",
+              "description": ""
+            }
+          ],
+          [
+            "zStep",
+            0
+          ],
+          [
+            "repetitions",
+            2
+          ],
+          [
+            "invert",
+            {
+              "direction": false,
+              "axis": false
+            }
+          ],
+          [
+            "divider",
+            1
+          ],
+          [
+            "velocity",
+            {
+              "isActive": true,
+              "value": "5000"
+            }
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#fd7000"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_166785079287953",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_166785079287954",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_166785079287955",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_166785079287956",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_166785079287957",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_166785079287958",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_166785079287959",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1765.6896862125116,
+          "y": 177.16794396197227
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "MatrixNode",
+        "id": "node_166785091743066",
+        "name": "Matriz",
+        "options": [
+          [
+            "matrix",
+            {
+              "id": "63694384ba294315e7d8be04",
+              "name": "Teste",
+              "order": "TLR",
+              "slots": {
+                "qtd": {
+                  "x": 4,
+                  "y": 4
+                },
+                "margin": {
+                  "x": 0,
+                  "y": 0
+                },
+                "size": {
+                  "x": 20,
+                  "y": 20
+                }
+              },
+              "subdivisions": {
+                "qtd": {
+                  "x": 1,
+                  "y": 1
+                },
+                "margin": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              "origin": {
+                "x": 0,
+                "y": 0
+              },
+              "scale": 1
+            }
+          ],
+          [
+            "color",
+            "#00ff89"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Reset",
+            {
+              "id": "ni_166785091743067",
+              "value": null
+            }
+          ],
+          [
+            "Próximo",
+            {
+              "id": "ni_166785091743068",
+              "value": null
+            }
+          ],
+          [
+            "Imagem",
+            {
+              "id": "ni_166785091743069",
+              "value": null
+            }
+          ],
+          [
+            "Item",
+            {
+              "id": "ni_166785091743070",
+              "value": null
+            }
+          ],
+          [
+            "Matriz",
+            {
+              "id": "ni_166785091743071",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_166785091743072",
+              "value": null
+            }
+          ],
+          [
+            "Fim",
+            {
+              "id": "ni_166785091743073",
+              "value": null
+            }
+          ],
+          [
+            "Erro",
+            {
+              "id": "ni_166785091743074",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1766.933991151311,
+          "y": -98.57182745413176
+        },
+        "width": 200,
+        "twoColumn": false
+      },
+      {
+        "type": "OrNode",
+        "id": "node_166785099076989",
+        "name": "Condicional OU",
+        "options": [
+          [
+            "color",
+            "#ff3900"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "A",
+            {
+              "id": "ni_166785099076990",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_166785099076991",
+              "value": null
+            }
+          ],
+          [
+            "Saida",
+            {
+              "id": "ni_166785099076992",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1495.49822404876,
+          "y": -95.98894660185492
+        },
+        "width": 200,
+        "twoColumn": false
+      }
+    ],
+    "connections": [
+      {
+        "id": "166785149544440",
+        "from": "ni_16678429780271",
+        "to": "ni_16678462337675"
+      },
+      {
+        "id": "166785149544542",
+        "from": "ni_166785091743072",
+        "to": "ni_166785079287954"
+      },
+      {
+        "id": "166785149544544",
+        "from": "ni_16678462337677",
+        "to": "ni_166785099076990"
+      },
+      {
+        "id": "166785149544546",
+        "from": "ni_166785099076992",
+        "to": "ni_166785091743068"
+      },
+      {
+        "id": "166785149544648",
+        "from": "ni_166785079287955",
+        "to": "ni_166785099076991"
+      },
+      {
+        "id": "166785149544650",
+        "from": "ni_166785091743073",
+        "to": "ni_166785050351234"
+      }
+    ],
+    "panning": {
+      "x": -430.26414128602704,
+      "y": 300.1266525928312
+    },
+    "scaling": 0.7100991269178197
+  },
+  "created_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "created_at": 1667850582.767574,
+  "edited_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "key": {
+    "$oid": "63696156a3978d14105b0979"
+  },
+  "updated_at": 1667851496.779097,
+  "input": {}
+},{
+  "_id": {
+    "$oid": "6369670680f561e6615c2523"
+  },
+  "parent_id": {
+    "$oid": "6369670680f561e6615c2523"
+  },
+  "name": "Labirinto A",
+  "description": "Labirinto A descrição",
+  "version": 1,
+  "saved": true,
+  "duplicated": false,
+  "content": {
+    "nodes": [
+      {
+        "type": "StartNode",
+        "id": "node_16678429780260",
+        "name": "Iniciar",
+        "options": [
+          [
+            "color",
+            "#00a000"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_16678429780271",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 990.7705036345258,
+          "y": -43.55284044108937
+        },
+        "width": 200,
+        "twoColumn": false
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_16678462337674",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": true,
+                "value": "240",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": true,
+                "value": "20",
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": true,
+                "value": "5000",
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_16678462337675",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_16678462337676",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_16678462337677",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_16678462337678",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_16678462337679",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_166784623376710",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_166784623376711",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_166784623376712",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_166784623376713",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_166784623376714",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_166784623376715",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1234.9018803789295,
+          "y": -100.85311028017651
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_166785030101218",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": false,
+                "value": "",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": true,
+                "value": "190",
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": false,
+                "value": "2000",
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_166785030101219",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_166785030101220",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_166785030101221",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_166785030101222",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_166785030101223",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_166785030101224",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_166785030101225",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_166785030101226",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_166785030101227",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_166785030101228",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_166785030101229",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1507.4952144108233,
+          "y": -101.96386514388504
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "StopNode",
+        "id": "node_166785050351133",
+        "name": "Encerrar",
+        "options": [
+          [
+            "color",
+            "#ff0000"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_166785050351234",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 2105.9444685553635,
+          "y": -49.95972503980887
+        },
+        "width": 200,
+        "twoColumn": false
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_1667852170135176",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": true,
+                "value": "300",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_1667852170136177",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_1667852170136178",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_1667852170136179",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_1667852170136180",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_1667852170136181",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_1667852170136182",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_1667852170136183",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_1667852170136184",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_1667852170136185",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_1667852170136186",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_1667852170136187",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1231.569615787803,
+          "y": 355.6671387040507
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_1667852184462188",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": true,
+                "value": "420",
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_1667852184462189",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_1667852184462190",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_1667852184462191",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_1667852184462192",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_1667852184462193",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_1667852184462194",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_1667852184462195",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_1667852184462196",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_1667852184462197",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_1667852184462198",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_1667852184462199",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1505.8886791513924,
+          "y": 355.4829609355644
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_1667852195566200",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": true,
+                "value": "180",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_1667852195567201",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_1667852195567202",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_1667852195567203",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_1667852195567204",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_1667852195567205",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_1667852195567206",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_1667852195567207",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_1667852195567208",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_1667852195567209",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_1667852195567210",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_1667852195567211",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1850.4118610041644,
+          "y": 355.27146185318384
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_1667852227863212",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": true,
+                "value": "340",
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_1667852227863213",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_1667852227863214",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_1667852227863215",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_1667852227863216",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_1667852227863217",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_1667852227863218",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_1667852227863219",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_1667852227863220",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_1667852227863221",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_1667852227863222",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_1667852227863223",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 2094.7261317860075,
+          "y": 355.08422836159286
+        },
+        "width": 200,
+        "twoColumn": true
+      },
+      {
+        "type": "MoveAxisNode",
+        "id": "node_1667852241735224",
+        "name": "Mover Eixo",
+        "options": [
+          [
+            "axisList",
+            [
+              {
+                "name": "X",
+                "isActive": true,
+                "value": "50",
+                "homing": false
+              },
+              {
+                "name": "Y",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "Z",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "A",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "B",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "C",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              },
+              {
+                "name": "F",
+                "isActive": false,
+                "value": 0,
+                "homing": false
+              }
+            ]
+          ],
+          [
+            "board",
+            {
+              "name": "OMNIS_CNC",
+              "id": "6244b0ad3a8338aceae46cf1"
+            }
+          ],
+          [
+            "color",
+            "#FF9800"
+          ],
+          [
+            "running",
+            true
+          ]
+        ],
+        "state": {},
+        "interfaces": [
+          [
+            "Gatilho",
+            {
+              "id": "ni_1667852241735225",
+              "value": null
+            }
+          ],
+          [
+            "XY",
+            {
+              "id": "ni_1667852241735226",
+              "value": null
+            }
+          ],
+          [
+            "Sucesso",
+            {
+              "id": "ni_1667852241735227",
+              "value": null
+            }
+          ],
+          [
+            "Falha",
+            {
+              "id": "ni_1667852241735228",
+              "value": null
+            }
+          ],
+          [
+            "X",
+            {
+              "id": "ni_1667852241735229",
+              "value": null
+            }
+          ],
+          [
+            "Y",
+            {
+              "id": "ni_1667852241735230",
+              "value": null
+            }
+          ],
+          [
+            "Z",
+            {
+              "id": "ni_1667852241735231",
+              "value": null
+            }
+          ],
+          [
+            "A",
+            {
+              "id": "ni_1667852241735232",
+              "value": null
+            }
+          ],
+          [
+            "B",
+            {
+              "id": "ni_1667852241735233",
+              "value": null
+            }
+          ],
+          [
+            "C",
+            {
+              "id": "ni_1667852241735234",
+              "value": null
+            }
+          ],
+          [
+            "Velocidade",
+            {
+              "id": "ni_1667852241735235",
+              "value": null
+            }
+          ]
+        ],
+        "position": {
+          "x": 1856.0352856511845,
+          "y": -99.71860008448738
+        },
+        "width": 200,
+        "twoColumn": true
+      }
+    ],
+    "connections": [
+      {
+        "id": "166785243435991",
+        "from": "ni_16678429780271",
+        "to": "ni_16678462337675"
+      },
+      {
+        "id": "166785243436093",
+        "from": "ni_16678462337677",
+        "to": "ni_166785030101219"
+      },
+      {
+        "id": "166785243436095",
+        "from": "ni_1667852241735227",
+        "to": "ni_166785050351234"
+      },
+      {
+        "id": "166785243436097",
+        "from": "ni_166785030101221",
+        "to": "ni_1667852170136177"
+      },
+      {
+        "id": "166785243436099",
+        "from": "ni_1667852170136179",
+        "to": "ni_1667852184462189"
+      },
+      {
+        "id": "1667852434360101",
+        "from": "ni_1667852184462191",
+        "to": "ni_1667852195567201"
+      },
+      {
+        "id": "1667852434360103",
+        "from": "ni_1667852195567203",
+        "to": "ni_1667852227863213"
+      },
+      {
+        "id": "1667852434360105",
+        "from": "ni_1667852227863215",
+        "to": "ni_1667852241735225"
+      }
+    ],
+    "panning": {
+      "x": -312.60866571182635,
+      "y": 193.25960735353925
+    },
+    "scaling": 0.6200489143031636
+  },
+  "created_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "created_at": 1667852038.282604,
+  "edited_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "key": {
+    "$oid": "6369670680f561e6615c2523"
+  },
+  "updated_at": 1667852455.633096,
+  "input": {}
+}]

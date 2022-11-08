@@ -1,0 +1,41 @@
+[{
+  "_id": {
+    "$oid": "63694384ba294315e7d8be04"
+  },
+  "name": "Teste",
+  "shape": [
+    4,
+    4
+  ],
+  "order": "TLR",
+  "slot_config": {
+    "sizes": [
+      20,
+      20
+    ],
+    "borders": [
+      0,
+      0
+    ],
+    "origin": [
+      0,
+      0
+    ],
+    "counter": [
+      4,
+      4
+    ],
+    "extra": [
+      0,
+      0
+    ],
+    "scale": 1
+  },
+  "created_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "created_at": 1667842948.443569
+}]

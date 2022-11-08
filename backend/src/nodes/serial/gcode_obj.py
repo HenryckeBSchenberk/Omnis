@@ -31,7 +31,7 @@ class SerialGcodeOBJ(Serial):
         is_gcode=True,
         disabled=False,
         startup_commands = [
-            "G28",
+            # "G28",           #! Not every board should start homming
         ],
         pins={},
         axes={}
@@ -225,7 +225,7 @@ class SerialGcodeOBJ(Serial):
         and if possible, turns off the power supply.
         A reset is required to return to operational mode.
         """
-        self.send("M112")
+        # self.send("M112")                 #! Assert this config is enabled
 
     # @verify
     def stop(self):
@@ -235,7 +235,7 @@ class SerialGcodeOBJ(Serial):
         steppers are expected to be out of position after this command.
         """
         self.pause()
-        self.send("P000")
+        # self.send("P000")                #! Assert this config is enabled
         # self.resumed.clear()
         if not self.was_stopped.is_set():
             self.was_stopped.set()
@@ -248,9 +248,9 @@ class SerialGcodeOBJ(Serial):
         Resume machine from pause (M0) using M108 command.
         """
             # self.send("M108")
-        self.send("R000")
+        # self.send("R000")                 #! Assert this config is enabled
         if self.was_stopped.is_set():
-            # self.super_send("G28")
+            # self.super_send("G28")        #! Assert this config is enabled
             self.was_stopped.clear()
         self.resumed.set()
 
