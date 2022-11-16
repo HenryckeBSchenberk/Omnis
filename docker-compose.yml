@@ -78,9 +78,9 @@ services:
     profiles: ["production", "development"]
     privileged: true
     container_name: backend
-    image: omnisofc/backend:latest
-    build:
-      context: ./backend
+    image: omnisofc/backend:test_dev
+    # build:
+    #   context: ./backend
     env_file:
       - .env.development
     ports:

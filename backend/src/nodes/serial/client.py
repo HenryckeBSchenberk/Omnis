@@ -1,6 +1,6 @@
 from wspyserial.client import Device
 from wspyserial.protocol import package as pkg
-from manager import Manager as SM
+from .manager import Manager as SM
 from os import environ
 
 HOST = environ.get("SERVER_HOST", "0.0.0.0")
