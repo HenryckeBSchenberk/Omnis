@@ -9,10 +9,10 @@ from cv2 import imdecode, imwrite
 from os.path import abspath
 
 from src.nodes.camera.custom_camera import Camera
-from src.nodes.serial.custom_serial import Serial
+from src.nodes.serial.client import CustomSerial as Serial
 
 from src.manager.camera_manager import CameraManager
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 
 from src.utility.system.date import set_system_date
 from api import logger, auth, dbo

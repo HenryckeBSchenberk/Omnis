@@ -1,7 +1,7 @@
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode, Wizard
 from src.nodes.timer.task_time import setInterval
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 from api import logger, exception
 from api.decorators import for_all_methods
 

@@ -1,5 +1,5 @@
 from src.nodes.base_node import BaseNode, Wizard
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 from src.nodes.node_manager import NodeManager
 from api import logger
 from bson import ObjectId

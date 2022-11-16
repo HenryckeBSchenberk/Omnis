@@ -7,7 +7,7 @@ from src.nodes.node_manager import NodeManager
 from src.nodes.node_registry import NodeRegistry
 from threading import enumerate as thread_enumerate
 from src.manager.camera_manager import CameraManager
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 from src.nodes.calibration.camera_calibration import CameraCalibration
 from threading import Thread
 from api import dbo, logger, environ, auth, private_key

@@ -9,7 +9,7 @@ from api.mutations import mutation
 
 from src.end_points import custom_video_response, Echo, Connection, health
 from src.nodes.base_node import BaseNode_websocket
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 from src.manager.camera_manager import CameraManager
 from src.manager.process_manager import ProcessManager as process
 from src.manager.matrix_manager import MatrixManager as matrix

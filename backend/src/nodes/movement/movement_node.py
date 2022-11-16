@@ -1,7 +1,7 @@
 from cmath import log
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode, Wizard
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 from src.nodes.serial.gcode_obj import SerialGcodeOBJ
 from api import logger, exception
 from api.decorators import for_all_methods

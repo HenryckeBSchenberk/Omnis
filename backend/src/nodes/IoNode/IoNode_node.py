@@ -3,7 +3,7 @@ from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
 from api.decorators import for_all_methods
 from api import dbo
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 from src.utility.system.sleep_alternative import sleep
 from bson import ObjectId
 NODE_TYPE = "IoNode"

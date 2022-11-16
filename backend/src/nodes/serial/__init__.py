@@ -1,6 +1,5 @@
 from api import dbo, logger
-from .custom_serial import Serial
-from .gcode_obj import SerialGcodeOBJ as MarlinAPI
+from .gcode import Client as GcodeClient
 from src.nodes.serial.pins_obj import pin
 from src.nodes.serial.axes import axis
 logger.info('Serial and MarlinAPI modules loaded')
@@ -13,23 +12,4 @@ axes = [
 ]
 for config in dbo.find_many("serial-manager", {}):
     if not config.get("disabled", False):
-        match config.get("is_gcode"):
-            case True:
-                logger.info('Creating MarlinAPI...')
-                MarlinAPI(
-                    pins={
-                        str(p._id): p
-                        for p in pins
-                        if p.board == str(config["_id"])
-                    },
-                    axes={
-                        str(a._id): a
-                        for a in axes
-                        if a.board == str(config["_id"])
-                    },
-                    **config
-                )
-                logger.info('Automatically creating MarlinAPI "{}"'.format(config.get("name")))
-            case _:
-                Serial(**config, **config.get("options"))
-                logger.info('Automatically creating Serial "{}"'.format(config.get("name")))
+        GcodeClient(host=config.get("host"), port=config.get("service_port"))
