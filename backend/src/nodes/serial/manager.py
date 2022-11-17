@@ -8,13 +8,13 @@ def get_id(payload):
 class Serial_Manager():
     def __init__(self) -> None:
         self.store = {}
-    
+
     def add(self, payload):
         _id = get_id(payload)
         self.store[_id] = payload
 
     def get(self):
-        return self.store.values()
+        return list(self.store.values())
     
     def add_device(self, device):
         self.add(device)

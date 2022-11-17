@@ -6,7 +6,6 @@ from api.decorators import for_all_methods
 from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
-from src.end_points import NodeStatus
 from threading import Thread, Event
 import asyncio
 import queue
@@ -17,7 +16,6 @@ from src.utility.crud.user import User
 
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")
-BaseNode_websocket = NodeStatus("node_status_updater", lambda: True)
 
 class Wizard(object):
     def _decorator(exteral_execution):
@@ -35,14 +33,12 @@ class Wizard(object):
 
     _decorator = staticmethod(_decorator)
 
-    @_decorator
-    def execute(self):
-        logger.error("The Wizard decorator should decorate an node 'execute' function.")
+    # @_decorator
+    # def execute(self):
+    #     logger.error("The Wizard decorator should decorate an node 'execute' function.")
 
-    _decorator = staticmethod(_decorator)
+    # _decorator = staticmethod(_decorator)
 
-
-@for_all_methods(exception(logger))
 class BaseNode(Wizard):
     """
     A class that represents a node, and its properties.
@@ -71,6 +67,7 @@ class BaseNode(Wizard):
     """
 
     def __init__(self, name, type_, id, options, output_connections) -> None:
+        self.loop = asyncio.get_event_loop()
         self.name = name
         self.type = type_
         self._id = id
@@ -78,20 +75,8 @@ class BaseNode(Wizard):
         self.output_connections = output_connections
         self.running = True
         self.stop_event = Event()
-        self.status = "LOADED"
-        self.info = {
-            "name": self.name,
-            "type": self.type,
-            "id": self._id,
-            "info": self.status,
-        }
-        self.update_status({"status": "LOADED"})
         self.auto_run = options.get("auto_run", False)
         logger.debug(f"[{type(self).__name__}] || {self.name} Node loaded")
-        # Thread(target=self.auto_update, name=f"NodeStatus_auto_update", daemon=True).start()
-
-    def auto_update(self):
-        asyncio.run(BaseNode_websocket.broadcast_on_change(self.who_am_i, self.who_am_i))
 
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)
@@ -122,42 +107,7 @@ class BaseNode(Wizard):
             )
 
             node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
-
-            if not self.running:
-                node_to_run.update_status({"status": "PAUSED"})
-
-            while not self.running:
-                if self.stop_event.isSet():
-                    return self.resume()
-
-            logger.debug(f"[{self}] Sending message {message} to node [{node_to_run}]")
-            if node_to_run and not self.stop_event.isSet():
-                event_list.put(message._id)
-                self.update_status(
-                    {
-                        "status": "SENDING",
-                        "message": {
-                            "from": target.get("from").get("id"),
-                            "to": target.get("to").get("id"),
-                        },
-                    }
-                )
-                A = Thread(
-                    target=node_to_run.execute,
-                    args=(message,),
-                    name=f"{str(self)}({message.sourceName}) -> {message}",
-                    daemon=True,
-                )
-                A.start()
-                A.join(2)
-                self.status = {
-                        "status": "SENDED",
-                        "message": {
-                            "from": "",
-                            "to": "",
-                        },
-                    }
-                
+            self.loop.create_task(node_to_run.execute(message))
 
     def AutoRun(self):
         message = Message(
@@ -171,20 +121,6 @@ class BaseNode(Wizard):
         )
         self.reset()
         self.execute(message)
-
-    def who_am_i(self):
-        self.info["name"] = self.name
-        self.info["type"] = self.type
-        self.info["id"] = self._id
-        self.info["info"] = self.status
-        # rtc_status.put(self.info)
-        return self.info
-
-    def update_status(self, info):
-        self.status = info
-        return self.who_am_i()
-        # BaseNode_websocket._broadcast(self.who_am_i())
-        
 
     def pause(self):
         self.running = False

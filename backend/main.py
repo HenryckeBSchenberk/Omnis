@@ -9,11 +9,11 @@ from api.mutations import mutation
 
 # from src.end_points import custom_video_response, Echo, Connection, health
 from src.end_points import Echo, Connection, health
-from src.nodes.base_node import BaseNode_websocket
-from src.nodes.serial.manager import Manager as SerialManager
+# from src.nodes.base_node import BaseNode_websocket
+# from src.nodes.serial.manager import Manager as SerialManager
 from src.manager.camera_manager import CameraManager
-from src.manager.process_manager import ProcessManager as process
-from src.manager.matrix_manager import MatrixManager as matrix
+# from src.manager.process_manager import ProcessManager as process
+# from src.manager.matrix_manager import MatrixManager as matrix
 
 from starlette.routing import Route
 
@@ -51,13 +51,13 @@ routes_app = [
     # Route(
     #     "/videos/{video_id}", endpoint=custom_video_response, methods=["GET", "POST"]
     # ),
+    # Route("/health",  endpoint=health,  methods=["GET", "POST"]),
+    # WebSocketRoute("/ws", endpoint=Echo),
+    # WebSocketRoute("/network", endpoint=Connection()),
+    WebSocketRoute("/process", endpoint=Echo),
+    WebSocketRoute("/nodes", endpoint=Echo),
+    WebSocketRoute(f"/controls/6244b0ad3a8338aceae46cf1", endpoint=Echo), #! BREAKING CHANGES
     #! BREAKING CHANGES - END
-    Route("/health",  endpoint=health,  methods=["GET", "POST"]),
-    WebSocketRoute("/ws", endpoint=Echo),
-    WebSocketRoute("/network", endpoint=Connection()),
-    WebSocketRoute("/process", endpoint=process.websocket),
-    WebSocketRoute("/nodes", endpoint=BaseNode_websocket),
-    # *[WebSocketRoute(f"/controls/{serial._id}", endpoint=serial.websocket) for serial in SerialManager.get()], #! BREAKING CHANGES
     Mount(
         "/",
         app=CORSMiddleware(

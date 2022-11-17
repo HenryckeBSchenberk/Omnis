@@ -7,8 +7,10 @@ HOST = environ.get("SERVER_HOST", "0.0.0.0")
 PORT = environ.get("SERVER_PORT", 8010)
 
 class CustomSerial(Device):
-    def __init__(self, host, port, manager=SM, loop=None):
+    def __init__(self, host, port, manager=SM, loop=None, _id=None, name="Serial"):
         super().__init__(f"ws://{host}:{port}", loop=loop)
+        self._id=_id
+        self.name=name
         self._pins = None
         self._axes = None
         self._manager = manager

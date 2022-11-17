@@ -1,6 +1,7 @@
 import asyncio
 from wspyserial.protocol import package
 from .client import CustomSerial as Serial
+from api import logger
 class PARSER:
     def readeable(func):
         def wrapper(pkg, *args, **kwargs):
@@ -117,8 +118,8 @@ class GCODE:
         raise NotImplementedError('G28 is not implemented yet')
 
 class Client(Serial):
-    def __init__(self, host, port) -> None:
-        super().__init__(host, port)
+    def __init__(self, host, port, _id=None) -> None:
+        super().__init__(host, port, _id=_id)
         self.__position = {'X': 0, 'Y': 0, 'Z': 0, 'E': 0}
 
     def parser(func):

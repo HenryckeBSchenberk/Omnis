@@ -12,4 +12,4 @@ axes = [
 ]
 for config in dbo.find_many("serial-manager", {}):
     if not config.get("disabled", False):
-        GcodeClient(host=config.get("host"), port=config.get("service_port"))
+        GcodeClient(host=config.get("host"), port=config.get("service_port"), _id=config.get("_id"))
