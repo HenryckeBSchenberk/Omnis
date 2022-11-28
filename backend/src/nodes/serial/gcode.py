@@ -1,7 +1,6 @@
 import asyncio
 from wspyserial.protocol import package
 from .client import CustomSerial as Serial
-from api import logger
 class PARSER:
     def readeable(func):
         def wrapper(pkg, *args, **kwargs):
@@ -169,7 +168,7 @@ class Client(Serial):
         if isinstance(value, dict):
             self.__position = value
 
-    async def GOTO(self, *axis, interval=0.1, timeout=10):
+    async def GOTO(self, *axis, interval=0.5, timeout=10):
         """
         Move to a specific position. And wait for current position to be reached.
         """
@@ -184,3 +183,11 @@ class Client(Serial):
                 self.position = await self.M114('R')
                 await asyncio.sleep(interval) #! Avoid buffer overflow
         await asyncio.wait_for(task(), timeout=timeout)
+
+async def main():
+    async with Client('0.0.0.0', 8010) as client:
+        await client.GOTO(('X', 0), ('F', 5000))
+        await client.GOTO(('X', 50), ('F', 500))
+
+if __name__ == '__main__':
+    asyncio.run(main())

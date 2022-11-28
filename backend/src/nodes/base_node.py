@@ -120,7 +120,7 @@ class BaseNode(Wizard):
             "auto_run",
         )
         self.reset()
-        self.execute(message)
+        self.loop.create_task(self.execute(message))
 
     def pause(self):
         self.running = False

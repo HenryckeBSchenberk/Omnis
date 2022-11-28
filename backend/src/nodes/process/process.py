@@ -156,6 +156,7 @@ class sample_process():
     def pause(self, internal=False, **kwargs):
         NodeManager.pause()
         self.process.pause()
+        logger.info('PAUSING - PROCESS FLAG')
         if internal:
             Alert("INFO", "Processo em pausa", "O processo foi parado automaticamente")
 

@@ -12,7 +12,7 @@ from src.end_points import Echo, Connection, health
 # from src.nodes.base_node import BaseNode_websocket
 # from src.nodes.serial.manager import Manager as SerialManager
 from src.manager.camera_manager import CameraManager
-# from src.manager.process_manager import ProcessManager as process
+from src.manager.process_manager import ProcessManager as process
 # from src.manager.matrix_manager import MatrixManager as matrix
 
 from starlette.routing import Route
@@ -45,7 +45,6 @@ schema = make_executable_schema(
     type_defs, query, mutation, subscription, snake_case_fallback_resolvers, *custom_types 
 )
 
-
 routes_app = [
     #! BREAKING CHANGES - START
     # Route(
@@ -54,7 +53,7 @@ routes_app = [
     # Route("/health",  endpoint=health,  methods=["GET", "POST"]),
     # WebSocketRoute("/ws", endpoint=Echo),
     # WebSocketRoute("/network", endpoint=Connection()),
-    WebSocketRoute("/process", endpoint=Echo),
+    WebSocketRoute("/process", endpoint=process.websocket),
     WebSocketRoute("/nodes", endpoint=Echo),
     WebSocketRoute(f"/controls/6244b0ad3a8338aceae46cf1", endpoint=Echo), #! BREAKING CHANGES
     #! BREAKING CHANGES - END
@@ -89,7 +88,6 @@ else:
 
 if __name__ == "__main__":
     try:
-        # _import()
         uvicorn.run(app=app, host=host, port=int(port), log_level=logger.level)
     finally:
         CameraManager.stop()
