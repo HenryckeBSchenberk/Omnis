@@ -1,7 +1,7 @@
 from asyncio import sleep, wait_for
 from api.websocket import ConnectionManager
 from uuid import uuid4
-
+from .gcode import GCODE
 class Machine_Websocket_API(ConnectionManager):
     def __init__(self, _id, machine):
         super().__init__(_id, machine)
@@ -118,9 +118,9 @@ class Machine:
         if isinstance(axis, dict):
             await self.parser.G0(*axis.items())
             return axis
-        elif isinstance(axis, list, tuple):
+        elif isinstance(axis, (list, tuple)):
             await self.parser.G0(*axis)
-            return self.parser.axis_tuple2dict(*axis)
+            return GCODE.axis_tuple2dict(*axis)
 
     @if_helethy
     async def set_absolute(self, value=True):
@@ -143,7 +143,9 @@ class Machine:
         async def task():
             atual_position = await self.get_position()
             while not all([atual_position.get(key, None) == value for key, value in future.items()]):
-                atual_position = await self.get_position()
+                sas = await self.get_position()
+                if isinstance(sas, dict):
+                    atual_position = sas
                 await self.webscoket_route.broadcast(self.update_status())
                 await sleep(interval)
         await wait_for(task(), timeout=timeout)

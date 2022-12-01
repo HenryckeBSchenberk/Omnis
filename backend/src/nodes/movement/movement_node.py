@@ -24,7 +24,7 @@ class MovementNode(BaseNode):
         self.serial = SerialManager.get_by_id(self.serial_id)
         if not self.serial: raise TypeError("SERIAL DEAD")
 
-        self.non_blocking = options.get("nonBlocking", True)
+        self.non_blocking = options.get("nonBlocking", False)
 
         self.trigger = Event()
         self.axis = []
@@ -112,11 +112,11 @@ class MovementNode(BaseNode):
         # Executa o movimento
         if self.non_blocking:
             # Sem execução bloqueante
-            await self.serial.set_position(*movement)
+            await self.serial.set_position(movement)
             # await self.serial.G0(*movement)
         else:
             # Com execução bloqueante
-            await self.serial.set_position_and_wait(*movement)
+            await self.serial.set_position_and_wait(movement)
             # await self.serial.GOTO(*movement)
 
         # Ativa a proxima interface
