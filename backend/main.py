@@ -7,15 +7,11 @@ from api.queries import query
 from api.subscriptions import subscription
 from api.mutations import mutation
 
-# from src.end_points import custom_video_response, Echo, Connection, health
-from src.end_points import Echo, Connection, health
-# from src.nodes.base_node import BaseNode_websocket
-# from src.nodes.serial.manager import Manager as SerialManager
+from src.end_points import Echo
 from src.manager.camera_manager import CameraManager
+from src.nodes.serial import setup as serial_setup
+from src.nodes.serial.manager import Manager as SerialManager
 from src.manager.process_manager import ProcessManager as process
-# from src.manager.matrix_manager import MatrixManager as matrix
-
-from starlette.routing import Route
 
 from ariadne.asgi import GraphQL
 from ariadne import (
@@ -45,6 +41,8 @@ schema = make_executable_schema(
     type_defs, query, mutation, subscription, snake_case_fallback_resolvers, *custom_types 
 )
 
+serial_setup()
+
 routes_app = [
     #! BREAKING CHANGES - START
     # Route(
@@ -55,6 +53,7 @@ routes_app = [
     # WebSocketRoute("/network", endpoint=Connection()),
     WebSocketRoute("/process", endpoint=process.websocket),
     WebSocketRoute("/nodes", endpoint=Echo),
+    *[WebSocketRoute(f"/serial/{device._id}", endpoint=device.webscoket_route) for device in SerialManager.get()],
     WebSocketRoute(f"/controls/6244b0ad3a8338aceae46cf1", endpoint=Echo), #! BREAKING CHANGES
     #! BREAKING CHANGES - END
     Mount(

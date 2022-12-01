@@ -17,7 +17,6 @@ class CustomSerial(Device):
         self._manager.add_device(self)
     
 
-
 if __name__ == "__main__":
     Client = CustomSerial(HOST, PORT)
     import asyncio

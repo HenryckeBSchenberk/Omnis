@@ -112,10 +112,12 @@ class MovementNode(BaseNode):
         # Executa o movimento
         if self.non_blocking:
             # Sem execução bloqueante
-            await self.serial.G0(*movement)
+            await self.serial.set_position(*movement)
+            # await self.serial.G0(*movement)
         else:
             # Com execução bloqueante
-            await self.serial.GOTO(*movement)
+            await self.serial.set_position_and_wait(*movement)
+            # await self.serial.GOTO(*movement)
 
         # Ativa a proxima interface
         self.on("Sucesso", self.serial_id)

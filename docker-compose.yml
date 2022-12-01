@@ -4,7 +4,7 @@ services:
     privileged: true
     profiles: ["development"]
     container_name: WebCam_0
-    image: "omnisofc/usbcam_api:latest"
+    image: "omnisofc/wswebcam:latest"
     environment:
       - SERVER_HOST=0.0.0.0
       - SERVER_PORT=8050
@@ -23,7 +23,7 @@ services:
     privileged: true
     profiles: ["development"]
     container_name: Marlin_0
-    image: "omnisofc/marlin_api:latest"
+    image: "omnisofc/wspyserial:latest"
     environment:
       - SERIAL_PORT=/dev/ttyUSB0
       - SERIAL_BAUD=115200
@@ -31,6 +31,8 @@ services:
       - DEVICE_ID=0
     ports:
       - "8010:8010"
+    networks:
+      - bind-network
     restart: always
 
   mongo:
@@ -91,6 +93,8 @@ services:
       LOG_LEVEL: ${LOG_LEVEL}
     links:
       - mongo-express
+      - marlin_0
+
     networks:
       - bind-network
     volumes:

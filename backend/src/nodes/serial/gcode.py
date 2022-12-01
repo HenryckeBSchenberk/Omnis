@@ -1,6 +1,6 @@
-import asyncio
 from wspyserial.protocol import package
 from .client import CustomSerial as Serial
+
 class PARSER:
     def readeable(func):
         def wrapper(pkg, *args, **kwargs):
@@ -32,7 +32,7 @@ class PARSER:
         Get current position of machine.
         _type:
             R - Return the current position of the machine, in real time.
-            ''- Return the future postion of the machine.
+            ''- Return the future position of the machine.
 
         """
         for echo in data:
@@ -58,11 +58,11 @@ class PARSER:
             if data and not isinstance(data, str) and data.pop(0) == "Reporting endstop status" and data.pop() == 'ok':
                 for status in data:
                     name, value = status.split(":")
+
                     if name in axis.keys():
-                        compare.append(axis.get(name[0].upper(), value.replace(" ", "")) == value.replace(" ", ""))
+                        compare.append(axis[name] == value.strip())
                 if all(compare): return True
                 return False
-
 
 class GCODE:
     def axis_tuple2string(*axis):
@@ -100,7 +100,7 @@ class GCODE:
         Get current position of machine.
         _type:
             R - Return the current position of the machine, in real time.
-            ''- Return the future postion of the machine.
+            ''- Return the future position of the machine.
         """
         return package(f"M114 {_type}", 2)
 
@@ -110,16 +110,15 @@ class GCODE:
         """
         return package("M119", sensors_qtd)
     
-    def G28():
+    def G28(*axis):
         """
         Home all axis.
         """
-        raise NotImplementedError('G28 is not implemented yet')
+        return package("G28 "+" ".join(f'{a}' for a in axis), -1, 120)
 
 class Client(Serial):
     def __init__(self, host, port, _id=None) -> None:
         super().__init__(host, port, _id=_id)
-        self.__position = {'X': 0, 'Y': 0, 'Z': 0, 'E': 0}
 
     def parser(func):
         """
@@ -156,38 +155,5 @@ class Client(Serial):
         return await self.send(GCODE.M119(sensors_qtd))
 
     @parser
-    async def G28(self):
-        raise NotImplementedError("G28 is not implemented yet")
-
-    @property
-    def position(self):
-        return self.__position
-
-    @position.setter
-    def position(self, value):
-        if isinstance(value, dict):
-            self.__position = value
-
-    async def GOTO(self, *axis, interval=0.5, timeout=10):
-        """
-        Move to a specific position. And wait for current position to be reached.
-        """
-
-        future = GCODE.axis_tuple2dict(*axis)
-        future.pop('F', None)
-
-        async def task():
-            await self.G0(*axis)
-            self.position = await self.M114('R')
-            while not all([self.position.get(key, None) == value for key, value in future.items()]):
-                self.position = await self.M114('R')
-                await asyncio.sleep(interval) #! Avoid buffer overflow
-        await asyncio.wait_for(task(), timeout=timeout)
-
-async def main():
-    async with Client('0.0.0.0', 8010) as client:
-        await client.GOTO(('X', 0), ('F', 5000))
-        await client.GOTO(('X', 50), ('F', 500))
-
-if __name__ == '__main__':
-    asyncio.run(main())
+    async def G28(self, *axis):
+        return await self.send(GCODE.G28(*axis))

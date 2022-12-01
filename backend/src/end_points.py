@@ -64,8 +64,6 @@ class Echo(WebSocketEndpoint):
     async def on_disconnect(self, websocket, close_code=100):
         print("disconnected")
 
-
-
 class Websocket(WebSocketEndpoint):
     encoding = "json"
     _id = ObjectId()
@@ -144,45 +142,3 @@ class Process(Websocket):
     async def on_receive(self, websocket, data):
         await super().on_receive(websocket, data)
         await self._broadcast()
-
-class Controls(Websocket):
-    def __init__(self, _id, serial):
-        super().__init__(_id, serial.status)
-        self.serial = serial
-
-    # async def _broadcast(self, *args):
-    #     await super()._broadcast(self.serial.status)
-
-    async def on_receive(self, websocket, data):
-        if data["context"] == "movementScale":
-            # Define a escala de movimento
-            for axis in self.serial.axes.values():
-                axis.step = float(data["value"])
-
-        elif data["context"] == "joggingDistance":
-            # Move a distancia especificada
-            axis = self.serial.axes[data["id"]]
-            axis.move(float(data["value"]))
-            axis.position = self.serial.G0(*axis())[axis.name]
-
-        elif data["context"] == "outputDevices":
-            # Ativa ou desativa os dispositivos de saida
-            self.serial.send(self.serial.pins[data["id"]].set_value(data["pwm"]))
-
-        elif data["context"] == "joggingStep":
-            # Movimento "Relativo"
-            axis = self.serial.axes[data["id"]]
-            axis.move(axis.position + axis.step * (1 if not data["isNegative"] else -1))
-            axis.position = self.serial.G0(*axis())[axis.name]
-        elif data["context"] == "contextMenuCommand":
-            # Executa um comando do menu
-            logger.info("Executing command: {}".format(data["command"]))
-            self.serial.send(data["command"])
-        elif data["context"] == "macroAction":
-            # Executa uma macro
-            logger.info("Executing macro: {}".format(data["value"]))
-            self.serial.send(data["value"])
-        else:
-            logger.debug(f"Websocket: unknow request {data}")
-
-        await websocket.send_json({"respose": "ok"})

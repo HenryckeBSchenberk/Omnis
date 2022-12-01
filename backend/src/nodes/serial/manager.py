@@ -1,7 +1,7 @@
 from uuid import uuid4
 
 def get_id(payload):
-    _id = getattr(payload, '_id', uuid4().hex)
+    _id = str(getattr(payload, '_id', uuid4().hex))
     payload._id = _id
     return _id
 
@@ -27,6 +27,6 @@ class Serial_Manager():
         return self.remove_by_id(_id)
 
     def get_by_id(self, _id):
-        return self.store.get(_id, None)
+        return self.store.get(str(_id), None)
 
 Manager = Serial_Manager()
