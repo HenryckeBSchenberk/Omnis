@@ -64,6 +64,10 @@ class PARSER:
                 if all(compare): return True
                 return False
 
+    @readeable
+    def G28(data):
+        return set(['echo:busy: processing', 'ok']).issubset(set(data))
+
 class GCODE:
     def axis_tuple2string(*axis):
         command = ""
@@ -102,7 +106,7 @@ class GCODE:
             R - Return the current position of the machine, in real time.
             ''- Return the future position of the machine.
         """
-        return package(f"M114 {_type}", 2)
+        return package(f"M114 {_type}", -1)
 
     def M119(sensors_qtd=6):
         """
@@ -114,7 +118,7 @@ class GCODE:
         """
         Home all axis.
         """
-        return package("G28 "+" ".join(f'{a}' for a in axis), -1, 120)
+        return package("G28 "+" ".join(f'{a}' for a in axis), -1, 200)
 
 class Client(Serial):
     def __init__(self, host, port, _id=None) -> None:
