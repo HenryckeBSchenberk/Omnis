@@ -8,9 +8,12 @@ from api.subscriptions import subscription
 from api.mutations import mutation
 
 from src.end_points import Echo
-from src.manager.camera_manager import CameraManager
 from src.nodes.serial import setup as serial_setup
+from src.nodes.camera import setup as camera_setup
+
 from src.nodes.serial.manager import Manager as SerialManager
+from src.nodes.camera.manager import Manager as CameraManager
+
 from src.manager.process_manager import ProcessManager as process
 
 from ariadne.asgi import GraphQL
@@ -41,7 +44,10 @@ schema = make_executable_schema(
     type_defs, query, mutation, subscription, snake_case_fallback_resolvers, *custom_types 
 )
 
+
 serial_setup()
+camera_setup()
+
 
 routes_app = [
     #! BREAKING CHANGES - START
@@ -54,6 +60,7 @@ routes_app = [
     WebSocketRoute("/process", endpoint=process.websocket),
     WebSocketRoute("/nodes", endpoint=Echo),
     *[WebSocketRoute(f"/serial/{device._id}", endpoint=device.webscoket_route) for device in SerialManager.get()],
+    *[WebSocketRoute(f"/camera/{device._id}", endpoint=device.webscoket_route) for device in CameraManager.get()],
     WebSocketRoute(f"/controls/6244b0ad3a8338aceae46cf1", endpoint=Echo), #! BREAKING CHANGES
     #! BREAKING CHANGES - END
     Mount(
@@ -69,13 +76,6 @@ routes_app = [
 
 app = Starlette(debug=True, routes=routes_app, on_shutdown=[dbo.close])
 
-@app.on_event("shutdown")
-def shutdown_event():
-    try:
-        CameraManager.stop()
-    except Exception as e:
-        logger.error(e)
-
 port = environ.get("SERVER_PORT", 80)
 if environ.get("NODE_ENV") == "development":
     socketI = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -89,5 +89,4 @@ if __name__ == "__main__":
     try:
         uvicorn.run(app=app, host=host, port=int(port), log_level=logger.level)
     finally:
-        CameraManager.stop()
         dbo.close()

@@ -8,7 +8,7 @@ from numpy import uint8, frombuffer
 from cv2 import imdecode, imwrite
 from os.path import abspath
 
-from src.nodes.camera.custom_camera import Camera
+from src.nodes.camera.camera import Camera
 from src.nodes.serial.client import CustomSerial as Serial
 
 from src.manager.camera_manager import CameraManager

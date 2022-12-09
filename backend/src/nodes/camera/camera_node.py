@@ -1,8 +1,8 @@
-from src.manager.camera_manager import CameraManager
 from src.nodes.node_manager import NodeManager
 from src.nodes.base_node import BaseNode, Wizard
 from api import logger, exception
 from api.decorators import for_all_methods
+from .manager import Manager as CameraManager
 
 NODE_TYPE = "CameraNode"
 
@@ -32,4 +32,4 @@ class CameraNode(BaseNode):
 
     @staticmethod
     def get_info(**kwargs):
-        return {"options": CameraManager.get_info()}
+        return {"options": "cameras"}
