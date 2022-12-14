@@ -48,7 +48,8 @@ class PARSER_UnitTest(unittest.TestCase):
                         'ok'
                     ]
                 ),
-                {'x_min': 'open', 'x2_min': 'open', 'y_min': 'open', 'z_min': 'open'}
+                {'x_min': 'open', 'x2_min': 'open', 'y_min': 'open', 'z_min': 'open'},
+                True
             )
         )
 
@@ -64,6 +65,7 @@ class PARSER_UnitTest(unittest.TestCase):
                         'ok'
                     ]
                 ),
-                {'x_min': 'open', 'x2_min': 'open', 'y_min': 'open', 'z_min': 'close'}
+                {'x_min': 'open', 'x2_min': 'open', 'y_min': 'open', 'z_min': 'triggered'},
+                True
             )
         )

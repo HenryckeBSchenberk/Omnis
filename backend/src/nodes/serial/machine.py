@@ -76,6 +76,17 @@ class Machine_Websocket_API(ConnectionManager):
         position = await self.machine.get_position()
         await self.send_to(websocket, position)
 
+    async def help_sensors(self, websocket, data=None):
+        return await self.send_to(websocket, {
+                'method_get': 'Will return the current state of all sensors',
+                'method_help': 'Will show this message',
+                'axis': '<axis>_<min/max>: <on/off>'
+            })
+
+    async def get_sensors(self, websocket, data=None):
+        sensors = await self.machine.get_sensors(**data.get('axis', {'X_min': 'on', 'X_max': 'on','X2_min': 'on', 'X2_max': 'on', 'Y_min': 'on', 'Y_max': 'on', 'Z_min': 'on', 'Z_max': 'on'}))
+        await self.send_to(websocket, sensors)
+
     async def help_homing(self, websocket, data=None):
         return await self.send_to(websocket, {
                 'axis': "(*Axis_Name) | (X, Y, Z, ...)",
@@ -152,17 +163,36 @@ class Machine:
 
     @if_helethy
     async def get_position(self):
-        new_pos= await self.parser.M114('R')
+        new_pos= await self.parser.M114(sequence=["X", "Y", "Z", "E", ":"])
         if isinstance(new_pos, dict):
             new_pos.pop('F', None)
             self.__last_position = new_pos
             self.__update_axis_position(**new_pos)
         return self.__last_position
 
+    @if_helethy
+    async def get_sensors(self, **axis):
+        
+        #replace on dict 'axis' 'on' with 'triggered' and 'off' with 'open'
+        for name, value in axis.items():
+            if value == 'on': axis[name] = 'triggered'
+            if value == 'off': axis[name] = 'open'
+
+
+        sensores = await self.parser.M119(axis)
+        if isinstance(sensores, dict):
+            self.__update_sensor_status(**sensores)
+        return sensores
+
     def __update_axis_position(self, **axis):
         for name, value in axis.items():
             ax = self.axis.get(name, False)
             if ax: ax.set_position(value)
+
+    def __update_sensor_status(self, **sensor):
+        for ax_val in self.axis.values():
+            for sn in ax_val.sensors:
+                sn.status = sensor.get(f"{sn.name}_{sn.type}", 'unknown')
 
     @if_helethy
     async def set_position(self, axis):

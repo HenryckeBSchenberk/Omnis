@@ -2,6 +2,12 @@ from wspyserial.protocol import package
 from .client import CustomSerial as Serial
 
 class PARSER:
+    """
+    Process data from serial port using specific GCODE parser for each GCODE command.
+
+    An parser should alwayes be decorated with @readeable decorator.
+    An parser function must receive only a data argument, from a package object.
+    """
     def readeable(func):
         def wrapper(pkg, *args, **kwargs):
             if pkg is not None: #! if user choose not read the package, it will be None
@@ -10,7 +16,7 @@ class PARSER:
                     return func(pkg.data, *args, **kwargs)
             return True #! If user choose not read the package, always return True
         return wrapper
-        
+
     @readeable
     def G0(data):
         """
@@ -52,17 +58,22 @@ class PARSER:
                 return False
     
     @readeable
-    def M119(data, axis={}):
-        if axis is not None:
-            compare = []
-            if data and not isinstance(data, str) and data.pop(0) == "Reporting endstop status" and data.pop() == 'ok':
-                for status in data:
-                    name, value = status.split(":")
+    def M119(data, axis={}, boolean_return=False):
+        individual = {}
+        axis = {k.lower(): v for k, v in axis.items()}
+        if data and not isinstance(data, str) and data.pop(0) == "Reporting endstop status" and data.pop() == 'ok':
+            for status in data:
+                name, value = status.split(":")
+                
+                value = value.strip().lower()
+                name = name.lower()
 
-                    if name in axis.keys():
-                        compare.append(axis[name] == value.strip())
-                if all(compare): return True
-                return False
+                if name in axis:
+                    individual[name] = (axis[name] == value)
+
+            if boolean_return:
+                return all(individual.values())
+            return individual
 
     @readeable
     def G28(data):
@@ -108,7 +119,7 @@ class GCODE:
         """
         return package(f"M114 {_type}", -1)
 
-    def M119(sensors_qtd=6):
+    def M119(sensors_qtd=-1):
         """
         Get endstop status.
         """
@@ -133,9 +144,11 @@ class Client(Serial):
             function_name = func.__name__
             function_parser = getattr(PARSER, function_name, False)
             if not function_parser:
-                #! Should warn user that there is no parser for this function.
                 return data
-            return function_parser(data)
+            if isinstance(args[0], Client):
+                args = args[1:] # Parsers can't handle the client object as 'self'.
+            x = function_parser(data, *args, **kwargs)
+            return x
         return wrapper
 
     @parser
@@ -151,12 +164,12 @@ class Client(Serial):
         return await self.send(GCODE.M42(pin, value))
     
     @parser
-    async def M114(self, _type=""):
-        return await self.send(GCODE.M114(_type))
+    async def M114(self, sequence=["X", "Y", "Z", "E", ":"]):
+        return await self.send(GCODE.M114('R'))
     
     @parser
-    async def M119(self, sensors_qtd=6):
-        return await self.send(GCODE.M119(sensors_qtd))
+    async def M119(self, axis={}, boolean_return=False):
+        return await self.send(GCODE.M119())
 
     @parser
     async def G28(self, *axis):
