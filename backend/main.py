@@ -9,6 +9,7 @@ from api.mutations import mutation
 
 from src.end_points import Echo
 from src.manager.camera_manager import CameraManager
+from src.nodes.base_node import BaseNode
 from src.nodes.serial import setup as serial_setup
 from src.nodes.serial.manager import Manager as SerialManager
 from src.manager.process_manager import ProcessManager as process
@@ -52,9 +53,10 @@ routes_app = [
     # WebSocketRoute("/ws", endpoint=Echo),
     # WebSocketRoute("/network", endpoint=Connection()),
     WebSocketRoute("/process", endpoint=process.websocket),
-    WebSocketRoute("/nodes", endpoint=Echo),
+    # WebSocketRoute("/nodes", endpoint=Echo),
     *[WebSocketRoute(f"/serial/{device._id}", endpoint=device.webscoket_route) for device in SerialManager.get()],
     WebSocketRoute(f"/controls/6244b0ad3a8338aceae46cf1", endpoint=Echo), #! BREAKING CHANGES
+    WebSocketRoute(f"/nodes", endpoint=BaseNode.websocket_route), #! BREAKING CHANGES
     #! BREAKING CHANGES - END
     Mount(
         "/",

@@ -1,4 +1,4 @@
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 from src.nodes.serial.manager import Manager as SerialManager
 from src.nodes.node_manager import NodeManager
 from api import logger
@@ -50,7 +50,7 @@ class WiggleNode(BaseNode):
         self.wait_checks = 0
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
-    @Wizard._decorator
+    #@Observer.fail
     def execute(self, message):
         logger.info("EXECUTING")
         action = message.targetName.lower()

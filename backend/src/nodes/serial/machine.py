@@ -105,7 +105,8 @@ class Machine_Websocket_API(ConnectionManager):
 
 
 class Machine:
-    def __init__(self, parser, axis=None, pins=None, _id=None) -> None:
+    def __init__(self, parser, axis=None, pins=None, _id=None, name="default_machine") -> None:
+        self.name = name
         self._id = _id or uuid4().hex
         self.__homed = [False, datetime.utcnow()]
         self.__last_position = {}

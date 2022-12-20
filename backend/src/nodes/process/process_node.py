@@ -34,8 +34,10 @@ class ProcessNode(BaseNode):
         self.manager = process
         NodeManager.addNode(self)
 
-    # @Wizard._decorator # Since this can be a start node, a wizar is not necessary
+    # #@Observer.fail # Since this can be a start node, a wizar is not necessary
+    @BaseNode.Notify_Execution()
     async def execute(self, message=""):
+        logger.info(f'[{self.name}] || {message}, {self.auto_run}')
         if self.auto_run:
             self.on("Gatilho", True)
         else:

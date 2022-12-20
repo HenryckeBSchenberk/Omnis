@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 from src.nodes.image.image_obj import Image
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -34,7 +34,7 @@ class ImageNode(BaseNode):
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @Wizard._decorator
+    #@Observer.fail
     def execute(self, message=""):
 
         self.image = Image(image=message.payload)

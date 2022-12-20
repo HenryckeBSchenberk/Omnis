@@ -1,8 +1,8 @@
+import functools
 from src.nodes.alerts.alert_obj import Alert
 from src.message import Message
 from src.nodes.node_manager import NodeManager
 from api import logger, exception
-from api.decorators import for_all_methods
 from api.store import nodes
 from api.subscriptions import SubscriptionFactory
 from threading import Event
@@ -17,29 +17,28 @@ from src.utility.crud.user import User
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")
 
-class Wizard(object):
-    def _decorator(exteral_execution):
-        def magic(self, message):
+class Observer(object):
+    def fail(exteral_execution):
+        def wrapper(self, message):
             try:
                 exteral_execution(self, message)
-                event_list.get()
             except Exception as e:
-                Alert("error", "Falha durante o processo", "Erro: {}".format(e))
+                Alert("error", "Falha durante o processo", "Erro: {}".format(str(e)))
                 process.stop(user=User('omnis', 'bot', 'developer', 'parallax@orakolo.com'))
-                raise e
-            finally:
-                event_list.task_done()
-        return magic
+                raise
+        return wrapper
 
-    _decorator = staticmethod(_decorator)
+    fail = staticmethod(fail)
 
-    # @_decorator
-    # def execute(self):
-    #     logger.error("The Wizard decorator should decorate an node 'execute' function.")
+from api.websocket import ConnectionManager
 
-    # _decorator = staticmethod(_decorator)
+class Node_Websocket_API(ConnectionManager):
+    def __init__(self, _id):
+        super().__init__(_id)
 
-class BaseNode(Wizard):
+
+class BaseNode(Observer):
+    websocket_route = Node_Websocket_API('0000')
     """
     A class that represents a node, and its properties.
 
@@ -72,11 +71,32 @@ class BaseNode(Wizard):
         self.type = type_
         self._id = id
         self.options = options
-        self.output_connections = output_connections
+        self.output_connections = {item._from.name: item for item in output_connections }
         self.running = True
         self.stop_event = Event()
         self.auto_run = options.get("auto_run", False)
         logger.debug(f"[{type(self).__name__}] || {self.name} Node loaded")
+
+    def Notify_Execution(payload_before={}, payload_after={}):
+        """
+        Broadcasts a message to the websocket route before and after the execution of a node.
+        the message will be updated with the node's information and the running status.
+        """
+        def decorator(func):
+            @functools.wraps(func)
+            async def wrapper(self, message):
+                
+                payload_before.update({**self.info(), 'running': True})
+                await self.websocket_route.broadcast(payload_before)
+                
+                await func(self, message)
+
+                payload_after.update({**self.info(), 'running': False})
+                await self.websocket_route.broadcast(payload_after)
+
+            return wrapper
+        return decorator
+        
 
     def onSuccess(self, payload, additional=None):
         self.on("onSuccess", payload, additional)
@@ -88,26 +108,44 @@ class BaseNode(Wizard):
         self.on("onFailure", payload, additional, pulse)
 
     def on(self, trigger, payload, additional=None, pulse=False, errorMessage=""):
-        for target in list(
-            filter(
-                lambda connection: connection.get("from").get("name") == trigger,
-                self.output_connections,
-            )
-        ):
-
+        logger.debug(f'[{self.name}] || interface {trigger} requested')
+        target = self.output_connections.get(trigger, None)
+        logger.debug(f'[{self.name}] || connection {target} selected')
+        if target is not None:
             message = Message(
-                target.get("from").get("id"),
-                target.get("to").get("id"),
-                target.get("from").get("name"),
-                target.get("to").get("name"),
-                target.get("from").get("nodeId"),
-                target.get("to").get("nodeId"),
+                target._from.id,
+                target._to.id,
+                target._from.name,
+                target._to.name,
+                target._from.nodeId,
+                target._to.nodeId,
                 payload,
                 additional,
             )
+            logger.debug(f'[{self.name}] || using message: {message} ')
+            node_to_run = NodeManager.getNodeById(target._to.nodeId)
+            if node_to_run is not None:
+                logger.debug(f'[{self.name}] || Resquest tasking on node: {node_to_run} ')
 
-            node_to_run = NodeManager.getNodeById(target.get("to").get("nodeId"))
-            self.loop.create_task(node_to_run.execute(message))
+                self.loop.create_task(
+                    self.websocket_route.broadcast(
+                        {
+                            'connection': {
+                                'from': target._from.id,
+                                'to': target._to.id
+                            }
+                        }
+                    )
+                )
+                
+                self.loop.create_task(node_to_run.execute(message))
+            else:
+                logger.error(f"[{self.name}] || Can't find node {target._to.nodeId}")
+                raise IndexError(f"Can't find node {target._to.nodeId}")
+        else:
+            logger.error(
+                f"Node {self.name} has no output connection for trigger {trigger}"
+            )
 
     def AutoRun(self):
         message = Message(
@@ -120,6 +158,7 @@ class BaseNode(Wizard):
             "auto_run",
         )
         self.reset()
+        print("AutoRun", self, message)
         self.loop.create_task(self.execute(message))
 
     def pause(self):
@@ -155,12 +194,10 @@ class BaseNode(Wizard):
     def __str__(self) -> str:
         return f"[{self.type}|{self.name}]"
 
-    def to_dict(self):
+    def info(self):
         return {
             "name": self.name,
             "id": self._id,
-            "options": self.options,
-            "output_connections": self.output_connections,
         }
 
     def __repr__(self):

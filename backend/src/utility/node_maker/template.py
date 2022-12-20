@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode
 from api import logger, exception
 from api.decorators import for_all_methods
 
@@ -18,9 +18,8 @@ class class_name(BaseNode):
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @Wizard._decorator
-    def execute(self, message=""):
-        self.onSuccess()
+    async def execute(self, message=""):
+        pass
 
     @staticmethod
     def get_info(**kwargs):

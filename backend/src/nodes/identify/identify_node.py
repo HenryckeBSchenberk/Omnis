@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 
 from .identify_functions import identifyObjects
 from api import logger, exception
@@ -26,7 +26,7 @@ class IdentifyNode(BaseNode):
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @Wizard._decorator
+    #@Observer.fail
     def execute(self, message):
         object_data_list = identifyObjects(message.payload, **self.filters)
         self.on("MatrizOut", object_data_list)
