@@ -1,0 +1,13 @@
+[{
+  "_id": {
+    "$oid": "63693d5d1535e272ab1748ce"
+  },
+  "username": "admin",
+  "avatar_image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCAvE4NQuOnrjboZSCZCOfDv7ry3l4yysuLg&usqp=CAU",
+  "email": "admin@email.com",
+  "last_name": "Orakolo",
+  "first_name": "admin",
+  "level": "developer",
+  "last_access": 1667854274.861385,
+  "password": "admin"
+}]

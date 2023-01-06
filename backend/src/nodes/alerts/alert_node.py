@@ -1,6 +1,6 @@
 from src.nodes.alerts.alert_obj import Alert
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 
 NODE_TYPE = "AlertNode"
 
@@ -17,6 +17,6 @@ class AlertNode(BaseNode):
         self.button_action = options["button_action"]        
         NodeManager.addNode(self)
 
-    @Wizard._decorator
+    #@Observer.fail
     def execute(self, message=""):
         Alert(self.title, self.level, self.title, self.description, self.how_to_solve, self.button_text, self.button_action)

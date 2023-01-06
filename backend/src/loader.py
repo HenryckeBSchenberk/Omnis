@@ -63,47 +63,51 @@ def extractOptionsFromNode(node):
     node_options = node.get("options")
     options = {}
     for option in node_options:
-        # if option[0].startswith("<") and option[0].endswith(">"):
-        #     try:
-        #         options[option[0][1:-1]] = targets.values[option[0]]
-        #     except KeyError:
-        #         raise KeyError(f"Variable {option[0]} not found at {node.get('name')}|{node.get('id')} during load. Aborting load.")
-                
-        # else:
             options[option[0].lower()] = option[1]
     return options
 
+class Interface:
+    def __init__(self, name, id, nodeId):
+        self.name = name
+        self.id = id
+        self.nodeId = nodeId
+    
+    def __str__(self) -> str:
+        return f"Interface({self.name}, {self.id})"
+    
+    def __repr__(self) -> str:
+        return self.__str__()
 
-@exception(logger)
+class Connection:
+    def __init__(self, fromInterface, toInterface):
+        self._from = fromInterface
+        self._to = toInterface
+    
+    def __str__(self) -> str:
+        return f"Connection({self._from} -> {self._to})"
+    
+    def __repr__(self) -> str:
+        return self.__str__()
+
 def extractConnections(nodeConfig):
-    return map(
-        lambda node_con: {
-            "from": {
-                "id": getInterfaceByInterfaceId(nodeConfig, node_con.get("from")).get(
-                    "id"
-                ),
-                "name": getInterfaceByInterfaceId(nodeConfig, node_con.get("from")).get(
-                    "name"
-                ),
-                "nodeId": getNodeByInterfaceId(nodeConfig, node_con.get("from")).get(
-                    "id"
-                ),
-            },
-            "to": {
-                "id": getInterfaceByInterfaceId(nodeConfig, node_con.get("to")).get(
-                    "id"
-                ),
-                "name": getInterfaceByInterfaceId(nodeConfig, node_con.get("to")).get(
-                    "name"
-                ),
-                "nodeId": getNodeByInterfaceId(nodeConfig, node_con.get("to")).get(
-                    "id"
-                ),
-            },
-        },
-        nodeConfig.get("connections"),
-    )
+    connections = nodeConfig.get("connections")
+    for connection in connections:
+        _from = getInterfaceByInterfaceId(nodeConfig, connection.get("from"))
+        _node = getNodeByInterfaceId(nodeConfig, connection.get("from"))
 
+        fromInterface = Interface(
+           _from.get("name"),
+           _from.get("id"),
+           _node.get("id")
+        )
+        _to = getInterfaceByInterfaceId(nodeConfig, connection.get("to"))
+        _node = getNodeByInterfaceId(nodeConfig, connection.get("to"))
+        toInterface = Interface(
+            _to.get("name"),
+            _to.get("id"),
+            _node.get("id")
+        )
+        yield Connection(fromInterface, toInterface)
 
 @exception(logger)
 def cleanNodeManager(nodeConfigs):
@@ -152,14 +156,14 @@ def loadConfig(NodeSheet, mode=LoadingMode):
 
         output_connections = list(
             filter(
-                lambda connection: connection.get("from").get("nodeId")
+                lambda connection: connection._from.nodeId
                 == node.get("id"),
                 connectionList,
             )
         )
         input_connections = list(
             filter(
-                lambda connection: connection.get("to").get("nodeId")
+                lambda connection: connection._to.nodeId
                 == node.get("id"),
                 connectionList,
             )
@@ -231,31 +235,3 @@ def loadConfig(NodeSheet, mode=LoadingMode):
 @exception(logger)
 def saveNodeChange(nodeChange):
     dbo.get_collection("node-history").insert_one(nodeChange)
-
-
-# @exception(logger)
-# def load(node_id=None):
-#     try:
-#         current_loaded_query = {"description": "current-config-loaded-id"}
-#         if node_id is not None:
-#             dbo.update_one(
-#                 "last-values",
-#                 current_loaded_query,
-#                 {"$set": {"sheet-id": ObjectId(node_id)}},
-#             )
-#             logger.warning(node_id)
-#             sheet = dbo.find_one(process.collection, {'_id':node_id})
-#             # sheet = NodeSheet().getNodeSheetById(node_id)
-#         else:
-#             logger.warning(node_id)
-#             sheet = dbo.find_one(process.collection, {'_id':node_id})
-#             # sheet = NodeSheet().getNodeSheetById(
-#             #     dbo.find_one("last-values", current_loaded_query)["sheet-id"]
-#             # )
-#         NodeManager.clear()
-#         loadConfig(sheet["content"], LoadingMode)
-#         return sheet
-#     except Exception as e:
-#         logger.error("Error loading config: {}".format(e))
-#         return False
-

@@ -1,7 +1,42 @@
 version: "3.1"
 services:
+  web_cam_0:
+    privileged: true
+    profiles: ["development"]
+    container_name: WebCam_0
+    image: "omnisofc/wswebcam:latest"
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8050
+      - DEVICE_ID=0
+    ports:
+      - "8050:8050"
+    volumes:
+      - /dev:/dev
+    networks:
+      - bind-network
+    logging:
+      options:
+        max-size: 50m
+
+  marlin_0:
+    privileged: true
+    profiles: ["development"]
+    container_name: Marlin_0
+    image: "omnisofc/wspyserial:latest"
+    environment:
+      - SERIAL_PORT=/dev/ttyUSB0
+      - SERIAL_BAUD=115200
+      - SERVER_PORT=8010
+      - DEVICE_ID=0
+    ports:
+      - "8010:8010"
+    networks:
+      - bind-network
+    restart: always
+
   mongo:
-    profiles: ["production", "development"]
+    profiles: ["development"]
     privileged: true
     image: mongo:4.2
     container_name: mongo_c
@@ -10,8 +45,6 @@ services:
       - ${DB_PORT}:27017
     environment:
       MONGO_INITDB_DATABASE: ${DB_NAME}
-      # MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      # MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
     networks:
         - bind-network
     volumes: 
@@ -47,10 +80,9 @@ services:
     profiles: ["production", "development"]
     privileged: true
     container_name: backend
-    image: omnisofc/backend:latest
-    build:
-      context: ./backend
-    restart: unless-stopped
+    image: omnisofc/backend:test_dev
+    # build:
+    #   context: ./backend
     env_file:
       - .env.development
     ports:
@@ -61,14 +93,10 @@ services:
       LOG_LEVEL: ${LOG_LEVEL}
     links:
       - mongo-express
+      - marlin_0
+
     networks:
       - bind-network
-    # Enable access to the camera and serial devices (if the device is connected, otherwise it will fail)
-    # devices:
-      # - "/dev/ttyACM0:/dev/ttyACM0"
-      # - "/dev/video0:/dev/video0"
-      # - "/dev/video2:/dev/video2"
-      # - "/dev/video4:/dev/video4"
     volumes:
       # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
       - ./backend:/app
@@ -107,7 +135,7 @@ services:
       options:
         max-size: 50m
   host_commands:
-    profiles: ["production", "development"]
+    profiles: ["production"]
     container_name: command
     restart: unless-stopped
     image:  omnisofc/host_commands:latest
@@ -116,7 +144,6 @@ services:
     ports:
       - 3000:3000
     volumes:
-      # - ./host_commands:/usr/src/app
       -  /var/run/host_signal:/command
 networks: 
   bind-network:

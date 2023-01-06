@@ -1,5 +1,5 @@
 from src.nodes.alerts.alert_obj import Alert
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 from src.nodes.node_manager import NodeManager
 from src.nodes.matrix.matrix_obj import Blister, Slot
 from bson import ObjectId
@@ -123,7 +123,7 @@ class MatrixNode(BaseNode):
         self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @Wizard._decorator
+    #@Observer.fail
     def execute(self, message):
         target = message.targetName.lower()
         match target:

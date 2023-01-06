@@ -1,9 +1,9 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 from api import logger, exception
 from api.decorators import for_all_methods
 from api import dbo
-from src.manager.serial_manager import SerialManager
+from src.nodes.serial.manager import Manager as SerialManager
 from src.utility.system.sleep_alternative import sleep
 from bson import ObjectId
 NODE_TYPE = "IoNode"
@@ -25,7 +25,7 @@ class IoNodeNode(BaseNode):
         NodeManager.addNode(self)
 
 
-    @Wizard._decorator
+    #@Observer.fail
     def execute(self, message=""):
         target = message.targetName.lower()
         if target == "gatilho":

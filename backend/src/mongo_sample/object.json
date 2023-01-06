@@ -1,0 +1,27 @@
+[{
+  "_id": {
+    "$oid": "63695150da2c3b8bd718a860"
+  },
+  "name": "Teste",
+  "description": "a",
+  "part_number": "a",
+  "supplier": "a",
+  "parts": null,
+  "unit": "a",
+  "img": "a",
+  "matrix": [
+    {
+      "$ref": "matrix",
+      "$id": {
+        "$oid": "63694384ba294315e7d8be04"
+      }
+    }
+  ],
+  "created_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "created_at": 1667846480.706868
+}]

@@ -1,0 +1,34 @@
+[{
+  "_id": {
+    "$oid": "63693a871535e272ab1748c2"
+  },
+  "name": "Teste",
+  "created_by": {
+    "name": "User_Test"
+  },
+  "created_at": {
+    "$numberLong": "23139812313"
+  },
+  "sketch": {
+    "$ref": "sketch",
+    "$id": {
+      "$oid": "6369436599cbe050d04cd841"
+    }
+  },
+  "description": null,
+  "edited_by": {
+    "$ref": "users",
+    "$id": {
+      "$oid": "63693d5d1535e272ab1748ce"
+    }
+  },
+  "object": [
+    {
+      "$ref": "object",
+      "$id": {
+        "$oid": "63695150da2c3b8bd718a860"
+      }
+    }
+  ],
+  "updated_at": 1667846549.003618
+}]

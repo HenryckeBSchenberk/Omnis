@@ -1,4 +1,6 @@
+import asyncio
 from src.nodes.process.process_node import ProcessNode
+from api import logger
 NODE_TYPE = "PauseNode"
 
 class PauseNode(ProcessNode):
@@ -8,9 +10,14 @@ class PauseNode(ProcessNode):
         self.options["auto_run"] = False
         super().__init__(name, id, options, output_connections, input_connections)
 
-    def execute(self, message):
-        super().execute(message)
-        while not self.manager.process.is_paused():
+    async def execute(self, message):
+        logger.info(f'[{self.name}] || {message}')
+        await super().execute(message)
+        await self.__resume(message)
+
+    async def __resume(self, message):
+        while self.manager.process.is_paused():
+            await asyncio.sleep(0.1)
             if self.manager.process.is_stopped():
                 return
         else:

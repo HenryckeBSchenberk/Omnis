@@ -3,7 +3,7 @@ from src.manager.camera_manager import CameraManager
 from cv2 import error
 from api import logger, exception
 from api.decorators import for_all_methods
-from vidgear.gears import CamGear
+# from vidgear.gears import CamGear #! BREAKING CHANGES
 from cv2 import cvtColor, COLOR_BGR2GRAY, arcLength, VideoWriter_fourcc
 from .roi_aruco import ROI_ARUCO as ROI
 
@@ -21,7 +21,10 @@ from src.utility.image_processing.guess_aruco_type import ARUCO_DICT
 
 
 @for_all_methods(exception(logger))
-class Camera(CamGear):
+#! BREAKING CHANGES - START
+# class Camera(CamGear):
+class Camera():
+#! BREAKING CHANGES - END
     """
         CamGear supports a diverse range of video streams which can handle/control video stream almost any IP/USB Cameras, multimedia video file format (upto 4k tested),
         any network stream URL such as http(s), rtp, rstp, rtmp, mms, etc. It also supports Gstreamer's RAW pipelines.

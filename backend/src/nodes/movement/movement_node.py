@@ -1,8 +1,6 @@
-from cmath import log
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
-from src.manager.serial_manager import SerialManager
-from src.nodes.serial.gcode_obj import SerialGcodeOBJ
+from src.nodes.base_node import BaseNode, Observer
+from src.nodes.serial.manager import Manager as SerialManager
 from api import logger, exception
 from api.decorators import for_all_methods
 from bson import ObjectId
@@ -17,114 +15,122 @@ class MovementNode(BaseNode):
     A class to send movement commands GCODES trough an serial instace.
 
     """
-
     def __init__(self, name, id, options, output_connections, input_connections):
         super().__init__(name, NODE_TYPE, id, options, output_connections)
         self.input_connections = input_connections
         self.serial_id = ObjectId(options["board"]["id"])
+
+        # Pega a instancia da serial correspondente
         self.serial = SerialManager.get_by_id(self.serial_id)
         if not self.serial: raise TypeError("SERIAL DEAD")
-        self.serial.resume()
+
+        self.non_blocking = options.get("nonBlocking", False)
+
+        self.trigger = Event()
         self.axis = []
+        self.homing_axis = []
         self.coordinates = {}
         self.special_coordinates = {}
-        self.wait_for_this = [{k.lower():v for k,v in x['to'].items() if k == "name"} for x in self.input_connections]
-        self.trigger = Event()
-        self.has_trigger = {"name":"Gatilho"} in self.wait_for_this
-        if self.has_trigger:
-            self.wait_for_this.remove({"name":"Gatilho"})
-            if len(self.wait_for_this) == 0:
+        self.activated_interfaces = 0
+
+        # Separa as interfaces de entrada selecionadas em uma lista de 
+        self.selected_interfaces = self.__selected_interfaces()
+
+        self.has_trigger_interface = {"name":"Gatilho"} in self.selected_interfaces
+
+        if self.has_trigger_interface:
+            self.selected_interfaces.remove({"name":"Gatilho"})
+            if len(self.selected_interfaces) == 0:
                 self.trigger.set()
         else:
             self.trigger.set()
-            
-        self.wait_checks = 0
-        self.homing_axis =[]
+        
         for axis in options["axislist"]:
+            # Adiciona como homing se estiver marcado
             if axis.get('homing'): self.homing_axis.append(axis['name'].upper())
+
+            # Separa caso possua um valor inicial
             if axis["isActive"]:
                 self.axis.append(axis["name"].lower())
+
+                # Verifica se o valor inicial é um valor especial (RELATIVO)
                 if (str(axis['value']).startswith('!')):
                     self.special_coordinates[axis["name"].lower()] = float(axis['value'][1:])
                 else:
                     self.coordinates[axis["name"].lower()] = float(axis['value'])
 
-        self.relative = options.get("relative", False)
-        self.trigger_delay = 2
-        self.auto_run = options.get("auto_run", False)
         NodeManager.addNode(self)
 
-    @Wizard._decorator
-    def execute(self, message):
-        action = message.targetName.lower()
-        if action in self.axis:
-            self.coordinates[action] = message.payload
-        elif action == "xy":
-            self.coordinates_f(message.payload)
-        if (self.wait_checks >= len(self.wait_for_this)) and self.has_trigger: self.trigger.set()
-        if (action == "gatilho" and  self.trigger.wait(120)) or ((self.wait_checks >= len(self.wait_for_this)) and not self.has_trigger):
-            if self.has_trigger: self.trigger.clear()
-            if any(self.homing_axis):
-                self.serial.G28(self.homing_axis)
-            self.gatilho_f()
-        # else:
-        #     logger.info(f"{action}, {self.trigger.is_set()}")
-        #     self.on("Falha", "Invalid action")
-        #     raise TypeError("Invalid action")
+    # #@Observer.fail
+    async def execute(self, message):
+        async with self.serial:
+            # Recebe a interface de execução
+            action = message.targetName.lower()
 
-    def coordinates_f(self, payload):
-        try:
-            for k, v in payload.items():
-                self.coordinates[k.lower()] = v
-            self.wait_checks+=1
-        except AttributeError:
-            self.on("Falha", "Invalid payload")
+            # Verifica se a interface é um eixo unico, e atualiza o valor do eixo
+            if action in self.axis:
+                self.coordinates[action] = message.payload
 
-    # ToDo time for wait after movement needs to be set on options.
-    def gatilho_f(self):
-        self.wait_checks = 0
-        # return
-        if self.serial is not None and self.serial.is_open:
-            pre_move = Counter(self.coordinates.copy())
-            pre_move.update(Counter(self.special_coordinates.copy()))
-            movement = [
-                (k, v)
-                for k, v in pre_move.items()
-                if v is not None
-            ]
+            # Caso seja um conjunto de eixos, atualiza todos os eixos
+            elif action == "xy":
+                self.update_multiple_coordinates(message.payload)
 
-            # if (pre_move.get('y',0) - self.coordinates.get('y',0)) > 2: logger.error(f"Valor de offset muito alto: {pre_move['y'] - self.coordinates['y']}")
-            # t = 0.5  # ! Remove this line
+            # Verifica se todas as interfaces dependentes foram atualizadas
+            if (self.activated_interfaces >= len(self.selected_interfaces)) and self.has_trigger_interface: self.trigger.set()
 
-            # if self.relative:
-            #     self.serial.send("G91", log=False)
-            #     # t = 1  # ! Remove this line
-            # else:
-            #     self.serial.send("G90", log=False)
-            self.serial.G0(*movement)
-            self.on("Sucesso", self.serial_id)
+            # Verifica se o "gatilho" e/ou todas as interfaces dependentes estão prontas
+            if (action == "gatilho" and  self.trigger.wait(120)) or ((self.activated_interfaces >= len(self.selected_interfaces)) and not self.has_trigger_interface):
+                # Reseta o "gatilho" e o contador de interfaces dependentes
+                if self.has_trigger_interface: self.trigger.clear()
 
+                # Aciona o movimento de hoaming nos eixos selecionados.
+                if any(self.homing_axis):
+                    self.serial.G28(self.homing_axis)
 
+                # Executa o movimento
+                await self.apply_coordinates()
+
+    def update_multiple_coordinates(self, payload):
+        for k, v in payload.items():
+            self.coordinates[k.lower()] = v
+        self.activated_interfaces+=1
+
+    async def apply_coordinates(self):
+        self.activated_interfaces = 0
+
+        # Calcula adição de movimento relativo
+        pre_move = Counter(self.coordinates.copy())
+        pre_move.update(Counter(self.special_coordinates.copy()))
+
+        # Separa as coordenadas em tuplas de eixo e valor
+        movement = [
+            (k, v)
+            for k, v in pre_move.items()
+            if v is not None
+        ]
+
+        # Executa o movimento
+        if self.non_blocking:
+            # Sem execução bloqueante
+            await self.serial.set_position(movement)
+            # await self.serial.G0(*movement)
         else:
-            if not self.serial.is_open:
-                self.on("Falha","Serial not running", pulse=True)
+            # Com execução bloqueante
+            await self.serial.set_position_and_wait(movement)
+            # await self.serial.GOTO(*movement)
 
-            if self.serial is None:
-                self.on("Falha","Serial not connected", pulse=True)
-
-    #! Marlin sometimes doesn't Homming after stop commands.
-    def stop(self):
-        self.serial.stop()
-        super().stop()
-        # self.serial.resume()
-
-    def resume(self):
-        self.serial.resume()
-        super().resume()
-
-    def pause(self):
-        self.serial.pause()
-        super().pause()
+        # Ativa a proxima interface
+        self.on("Sucesso", self.serial_id)
 
     def get_info(**kwargs):
-        return {"options": SerialManager.get_info()}
+        return {"options": [{'name':s.name, 'id':str(s._id)} for s in SerialManager.get()]}
+
+    def __selected_interfaces(self):
+        return [
+            {
+                name.lower():value 
+                for name, value
+                in value._to.__dict__.items()
+                if name == "name"
+            } for value in self.input_connections
+        ]

@@ -1,0 +1,10 @@
+[{
+  "_id": {
+    "$oid": "6244b0ad3a8338aceae46cf1"
+  },
+  "name": "OMNIS_CNC",
+  "port": "/dev/ttyACM0",
+  "baudrate": 115200,
+  "is_gcode": true,
+  "disabled": false
+}]

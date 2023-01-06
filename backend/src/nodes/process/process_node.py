@@ -34,12 +34,17 @@ class ProcessNode(BaseNode):
         self.manager = process
         NodeManager.addNode(self)
 
-    # @Wizard._decorator # Since this can be a start node, a wizar is not necessary
-    def execute(self, message=""):
+    # #@Observer.fail # Since this can be a start node, a wizar is not necessary
+    @BaseNode.Notify_Execution()
+    async def execute(self, message=""):
+        logger.info(f'[{self.name}] || {message}, {self.auto_run}')
         if self.auto_run:
             self.on("Gatilho", True)
         else:
-            Thread(target=self.function, kwargs={'user':User('omnis', 'bot', 'developer', 'parallax@orakolo.com')}).start()
+            # Thread(target=self.function, kwargs={'user':User('omnis', 'process', 'developer', 'parallax@orakolo.com')}).start()
+            logger.info('process node - execute')
+            self.function(user=User('omnis','process','developer',''))
+
 
     @staticmethod
     def get_info(**kwargs):

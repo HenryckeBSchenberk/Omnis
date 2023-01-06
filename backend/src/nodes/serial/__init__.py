@@ -1,35 +1,42 @@
-from api import dbo, logger
-from .custom_serial import Serial
-from .gcode_obj import SerialGcodeOBJ as MarlinAPI
-from src.nodes.serial.pins_obj import pin
-from src.nodes.serial.axes import axis
-logger.info('Serial and MarlinAPI modules loaded')
-pins = [pin(**p) for p in dbo.find_many("pins")]
-axes = [
-    axis(**a)
-    for a in dbo.find_many(
-        "machine_axis", data={"_id": 1, "name": 1, "board": 1, "setup": 1}
-    )
-]
-for config in dbo.find_many("serial-manager", {}):
-    if not config.get("disabled", False):
-        match config.get("is_gcode"):
-            case True:
-                logger.info('Creating MarlinAPI...')
-                MarlinAPI(
-                    pins={
-                        str(p._id): p
-                        for p in pins
-                        if p.board == str(config["_id"])
-                    },
-                    axes={
-                        str(a._id): a
-                        for a in axes
-                        if a.board == str(config["_id"])
-                    },
-                    **config
-                )
-                logger.info('Automatically creating MarlinAPI "{}"'.format(config.get("name")))
-            case _:
-                Serial(**config, **config.get("options"))
-                logger.info('Automatically creating Serial "{}"'.format(config.get("name")))
+def setup():
+    from api import dbo, logger
+    from .gcode import Client as GcodeClient
+    from src.nodes.serial.pins_obj import pin
+    from src.nodes.serial.axes import axis
+    from src.nodes.serial.sensors import Sensor
+    from src.nodes.serial.machine import Machine
+
+    logger.info('Serial and MarlinAPI modules loaded')
+    pins = [pin(**p) for p in dbo.find_many("pins")]
+
+    pipeline = [
+        {"$match": {"disabled": {"$ne": True}}},                # Only enabled axes
+        {"$project": {"name": 1, "board": 1, "sensors": 1}},    # Only name, board and sensors
+        {"$lookup": {                                           # Find sensors
+            "from": "machine_sensors",                          # Collection to search
+            "localField": "sensors.ids",                        # Field to match in the local collection
+            "foreignField": "_id",                              # Field to match in the foreign collection
+            "as": "sensors"                                     # Output field name (replace the refs with objects)
+        }}
+    ]
+
+    axes = {
+        config['name']: axis(                                   # Store the axis in a dict with the axis name as key
+            sensors=[
+                Sensor(**s) for s in config.pop('sensors', [])  # Remove the sensors from the config and create the objects
+            ],
+            **config                                            # Create the axis object whit the remaining config
+        ) for config in dbo.aggregate(                          # Aggregate the collection
+            "machine_axis",                                     # Collection to aggregate    
+            pipeline                                            # Pipeline to execute
+        )
+    }
+
+    for config in dbo.find_many("serial-manager", {}):
+        if not config.get("disabled", False):
+            parser = GcodeClient(
+                host=config.get("host"),
+                port=config.get("service_port"),
+                _id=config.get("_id")
+            )
+            Machine(parser, axes, pins,  config.get("_id"))
