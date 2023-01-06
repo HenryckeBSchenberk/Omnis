@@ -6,7 +6,7 @@ from starlette.endpoints import WebSocketEndpoint
 class ConnectionManager(WebSocketEndpoint):
     encoding = "json"
 
-    def __init__(self, _id, interface):
+    def __init__(self, _id, interface=None):
         self._id = _id or uuid4().hex
         self.connections = []
         self.interface = interface

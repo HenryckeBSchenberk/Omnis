@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 from api import logger, exception
 from api.decorators import for_all_methods
 
@@ -23,7 +23,7 @@ class SwitchNode(BaseNode):
         self.translator ={"Verdadeiro":True, "Falso":False}
         NodeManager.addNode(self)
 
-    @Wizard._decorator
+    #@Observer.fail
     def execute(self, message=""):
         target = message.targetName
         if target in self.variables:                                           #? Esperar todas as variaveis? similar ao de movimentação?

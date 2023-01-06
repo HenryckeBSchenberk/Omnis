@@ -11,6 +11,7 @@ class PauseNode(ProcessNode):
         super().__init__(name, id, options, output_connections, input_connections)
 
     async def execute(self, message):
+        logger.info(f'[{self.name}] || {message}')
         await super().execute(message)
         await self.__resume(message)
 

@@ -1,5 +1,5 @@
 from src.nodes.node_manager import NodeManager
-from src.nodes.base_node import BaseNode, Wizard
+from src.nodes.base_node import BaseNode, Observer
 from src.nodes.serial.manager import Manager as SerialManager
 from api import logger, exception
 from api.decorators import for_all_methods
@@ -61,7 +61,7 @@ class MovementNode(BaseNode):
 
         NodeManager.addNode(self)
 
-    # @Wizard._decorator
+    # #@Observer.fail
     async def execute(self, message):
         async with self.serial:
             # Recebe a interface de execução
@@ -130,7 +130,7 @@ class MovementNode(BaseNode):
             {
                 name.lower():value 
                 for name, value
-                in value['to'].items()
+                in value._to.__dict__.items()
                 if name == "name"
             } for value in self.input_connections
         ]

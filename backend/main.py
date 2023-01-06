@@ -58,10 +58,11 @@ routes_app = [
     # WebSocketRoute("/ws", endpoint=Echo),
     # WebSocketRoute("/network", endpoint=Connection()),
     WebSocketRoute("/process", endpoint=process.websocket),
-    WebSocketRoute("/nodes", endpoint=Echo),
+    # WebSocketRoute("/nodes", endpoint=Echo),
     *[WebSocketRoute(f"/serial/{device._id}", endpoint=device.webscoket_route) for device in SerialManager.get()],
     *[WebSocketRoute(f"/camera/{device._id}", endpoint=device.webscoket_route) for device in CameraManager.get()],
     WebSocketRoute(f"/controls/6244b0ad3a8338aceae46cf1", endpoint=Echo), #! BREAKING CHANGES
+    WebSocketRoute(f"/nodes", endpoint=BaseNode.websocket_route), #! BREAKING CHANGES
     #! BREAKING CHANGES - END
     Mount(
         "/",

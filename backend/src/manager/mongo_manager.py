@@ -158,3 +158,5 @@ class MongoOBJ:
                 self.client.close()
             except Exception:
                 pass
+    def aggregate(self, collection, pipeline):
+        return self.dbo[collection].aggregate(pipeline)
