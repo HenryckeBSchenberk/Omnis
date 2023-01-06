@@ -10,6 +10,8 @@ class ConnectionManager(WebSocketEndpoint):
         self._id = _id or uuid4().hex
         self.connections = []
         self.interface = interface
+        if not getattr(self.interface, 'update_status', False):
+            setattr(self.interface, 'update_status', lambda: {'status': 'unknow'})
 
     def __call__(self, scope, receive, send):
         super().__init__(scope, receive, send)
@@ -21,7 +23,13 @@ class ConnectionManager(WebSocketEndpoint):
         await sleep(0.5)
 
     async def on_receive(self, websocket, data=None):
-        await websocket.send_json({"echo": data})
+        raise NotImplementedError
+    
+    async def update_status(self, websocket, data={}):
+        if data.get('broadcast'):
+            return await self.broadcast(self.interface.update_status())
+        else:
+            return await self.send_to(websocket, self.interface.update_status())
 
     async def on_disconnect(self, websocket, *args):
         self.connections.remove(websocket)
