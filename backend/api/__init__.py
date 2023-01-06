@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, makedirs, path
 from platform import system
 from dotenv import load_dotenv
 from .log import logger, exception, custom_handler, logger, levels, lvl
@@ -16,15 +16,39 @@ environ.setdefault("SO", system())
 connectToMongo()
 dbo = getDb()
 
-# key_context = dbo.find_one("keys")
-# from cryptography.hazmat.primitives.serialization import load_ssh_private_key, load_ssh_public_key
-# with open(key_context["path"], "r") as private, open(key_context["path"]+'.pub', "r") as public:
-#     private_key = load_ssh_private_key(private.read().encode(), key_context["pass"].encode())
-#     public_key =  load_ssh_public_key(public.read().encode(), key_context["pass"].encode())
+## A function to create a pair of public and private keys for JWT authentication, using ed25519 algorithm
+def generate_keys_bytes():
+    from cryptography.hazmat.primitives.asymmetric import ed25519
+    from cryptography.hazmat.primitives import serialization
 
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-private_key = Ed25519PrivateKey.generate()
-public_key = private_key.public_key()
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    public_key = private_key.public_key()
+    private_bytes = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    )
+    public_bytes = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    return private_bytes, public_bytes
+
+## Try to load the keys from the correspondent files, if it doesn't exist, create a new pair and save it to the files
+keys_path = "./keys"
+
+try:
+    with open(f'{keys_path}/priv', 'rb') as private_key_file, open(f'{keys_path}/pub', 'rb') as public_key_file:
+        private_key = private_key_file.read()
+        public_key = public_key_file.read()
+except (FileNotFoundError, IOError):
+    private_key, public_key = generate_keys_bytes()
+    makedirs(path.dirname(f'{keys_path}/priv'), exist_ok=True)
+    makedirs(path.dirname(f'{keys_path}/pub'), exist_ok=True)
+    with open(f'{keys_path}/priv', 'wb') as private_key_file, open(f'{keys_path}/pub', 'wb') as public_key_file:
+        private_key_file.write(private_key)
+        public_key_file.write(public_key)
+
 
 from src.utility.crud.user import User
 
