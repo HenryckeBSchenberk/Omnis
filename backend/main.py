@@ -8,9 +8,9 @@ from api.subscriptions import subscription
 from api.mutations import mutation
 
 from src.end_points import Echo
+from src.nodes.base_node import BaseNode
 from src.nodes.serial import setup as serial_setup
 from src.nodes.camera import setup as camera_setup
-
 from src.nodes.serial.manager import Manager as SerialManager
 from src.nodes.camera.manager import Manager as CameraManager
 

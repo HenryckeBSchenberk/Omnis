@@ -10,8 +10,6 @@ class ConnectionManager(WebSocketEndpoint):
         self._id = _id or uuid4().hex
         self.connections = []
         self.interface = interface
-        if not getattr(self.interface, 'update_status', False):
-            setattr(self.interface, 'update_status', lambda: {'status': 'unknow'})
 
     def __call__(self, scope, receive, send):
         super().__init__(scope, receive, send)
