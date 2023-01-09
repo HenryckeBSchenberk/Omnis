@@ -8,14 +8,15 @@ from src.nodes.node_registry import NodeRegistry
 from threading import enumerate as thread_enumerate
 from src.manager.camera_manager import CameraManager
 from src.nodes.serial.manager import Manager as SerialManager
-from src.nodes.calibration.camera_calibration import CameraCalibration
-from threading import Thread
+# from src.nodes.calibration.camera_calibration import CameraCalibration #! docker build fails to install aruco module
+
 from api import dbo, logger, environ, auth, private_key
 from datetime import datetime, timedelta, timezone
 import jwt
 from graphql.error import GraphQLError
 
-
+import argon2
+ph = argon2.PasswordHasher()
 
 payload = {"success": False, "errors": None}
 
@@ -67,7 +68,7 @@ def resolve_getThr( **kwargs):
 @query.field("calibrateCamera")
 @auth('maintenance')
 def resolve_calibrateCamera( **kwargs):
-    Thread(target=CameraCalibration(**kwargs.get("input", {})).calibrate).start()
+    # Thread(target=CameraCalibration(**kwargs.get("input", {})).calibrate).start()
     return True
 
 
@@ -101,22 +102,34 @@ def resolve_getAxisList( **kwargs):
 
 @query.field("authenticateUser")
 def resolve_authUserProfile(obj, info, username=None, **kwargs):
-    keep = {'password':0}
-    user = dbo.find_one("users", {"username": username}, keep) if username else False
-    if not user:
-        user = dbo.find_one("users", kwargs, keep)
-    if user:
-        payload = user.copy()
-        payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=payload.get('exp', 48)), '_id': str(payload['_id'])})
-        token = jwt.encode(
-            payload,
-            key=private_key,
-            algorithm="EdDSA",
-        )
-        now = datetime.utcnow().timestamp()
-        dbo.update_one('users', {'_id':ObjectId(user['_id'])}, {'$set':{'last_access':now}})
-        user.update({'last_access': now})
-        return {"user": user, "token": token}
+    user = dbo.find_one("users", {"username": username}) if username else dbo.find_one("users", kwargs)
+    try:
+        if user:
+
+            password = user.pop('password', None)
+            payload = user.copy()
+
+            if ph.verify(password, kwargs['password']):
+                if ph.check_needs_rehash(password):
+                    payload.update({'password':ph.hash(kwargs['password'])})
+
+                payload.update({"exp": datetime.now(tz=timezone.utc) + timedelta(hours=payload.get('exp', 48)), '_id': str(payload['_id'])})
+
+                token = jwt.encode(
+                    payload,
+                    key=private_key,
+                    algorithm="EdDSA",
+                )
+
+                now = datetime.utcnow().timestamp()
+                dbo.update_one('users', {'_id':ObjectId(user['_id'])}, {'$set':{'last_access':now}})
+                user.update({'last_access': now})
+
+                return {"user": user, "token": token}
+    except argon2.exceptions.InvalidHash:
+        logger.error("Invalid Hash on user: " + str(user['_id']))
+    except argon2.exceptions.VerifyMismatchError:
+        pass
     raise GraphQLError("Invalid Login")
 
 @query.field("authUserProfile")
