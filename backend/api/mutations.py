@@ -17,7 +17,11 @@ from src.nodes.serial.manager import Manager as SerialManager
 from src.utility.system.date import set_system_date
 from api import logger, auth, dbo
 import os
+
+from argon2 import PasswordHasher
+
 mutation = MutationType()
+ph = PasswordHasher()
 
 def restart():
     sleep(2)
@@ -169,6 +173,7 @@ def syncHostTime_resolver( timestamp, **kwargs):
 @mutation.field("registerUser")
 @auth("manager")
 def registerUser_resolver( **kwargs):
+    kwargs["newUser"].update({"password":ph.hash(kwargs["newUser"]["password"])}) #Change password to hash
     dbo.insert_one("users", kwargs["newUser"])
     return True
 
