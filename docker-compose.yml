@@ -80,7 +80,7 @@ services:
     profiles: ["production", "development"]
     privileged: true
     container_name: backend
-    image: omnisofc/backend:test_dev
+    image: omnisofc/backend:test_actions
     # build:
     #   context: ./backend
     env_file:
