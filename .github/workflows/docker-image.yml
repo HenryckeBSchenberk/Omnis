@@ -1,9 +1,14 @@
-name: ci
+name: docker
 
-on:
-  push:
-    branches:
-      - "docker_builder"
+on: 
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Manual pub test version' 
 
 jobs:
   docker:
@@ -43,7 +48,7 @@ jobs:
               linux/amd64
               linux/arm64
           push: true
-          tags: ${{ secrets.DOCKER_OMNIS_USER }}/backend:latest
+          tags: ${{ secrets.DOCKER_OMNIS_USER }}/backend:test_actions
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           
