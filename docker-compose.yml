@@ -3,18 +3,77 @@ services:
   
   frontend:
     container_name: frontend
-    privileged: true
     image: test_front
+    restart: always
+    privileged: true
     build:
       context: ./frontend/
-    restart: always
+    profiles:
+      - default
+      - frontend
     networks:
       - bind-network
       - default
     logging:
       options:
         max-size: 50m
+  
+  backend:
+    privileged: true
+    container_name: backend
+    image: omnisofc/backend:test_actions
+    links:
+      - marlin_0
+      - mongo
+    profiles:
+      - default
+      - backend
+    networks:
+      - bind-network
+    depends_on:
+      - mongo
+    logging:
+      options:
+        max-size: 50m
 
+  wswebcam_0:
+    container_name: WebCam_0
+    image: "omnisofc/wswebcam:latest"
+    restart: always
+    privileged: true
+    profiles:
+      - default
+      - wswebcam
+    networks:
+      - bind-network
+    logging:
+      options:
+        max-size: 50m
+
+  marlin_0:
+    container_name: Marlin_0
+    image: "omnisofc/wspyserial:latest"
+    restart: always
+    privileged: true
+    profiles:
+      - default
+      - wspyserial
+      - backend
+    networks:
+      - bind-network
+
+  mongo:
+    container_name: mongo_c
+    image: mongo:4.2
+    restart: always
+    privileged: true
+    profiles:
+      - default
+      - mongo
+      - backend
+    networks:
+        - bind-network
+  
 networks: 
   bind-network:
     driver: bridge
