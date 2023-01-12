@@ -50,7 +50,7 @@
       {{ status[actualStatus].text }}
     </v-btn>
     <v-btn
-      v-if="actualStatus != 'stopped'"
+      v-if="actualStatus == 'paused'"
       rounded
       x-large
       color="error"
