@@ -1,6 +1,21 @@
 <template>
   <div class="p-2 pl-4 d-flex flex-column">
-    <div v-if="$access('jogButtons')">
+    <v-fade-transition>
+      <v-overlay 
+        color="blue-grey darken-4"
+        absolute
+        opacity="0.85"
+        :value="actualStatus !== 'stopped'">
+    
+        <div 
+          class="align-center d-flex flex-column justify-center text-center text-h6 text-uppercase "
+        > 
+        <v-icon large> mdi-lock </v-icon>
+        Em processo 
+      </div>
+    </v-overlay>
+  </v-fade-transition>
+  <div v-if="$access('jogButtons')">
       <jog-buttons
         :axisDistances="axisDistances"
         @send="sendMessage"
@@ -29,7 +44,9 @@ export default {
     OutputDevices,
     Macros,
   },
-
+  props:{
+    actualStatus: String
+  },
   data() {
     return {
       axisDistances: {},
