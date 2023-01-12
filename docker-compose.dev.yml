@@ -1,0 +1,14 @@
+version: "3.1"
+services:
+    frontend:
+      command: development
+      environment:
+        - NODE_ENV=development
+        - VUE_APP_URL_API_IP=192.168.192.26
+        - VUE_APP_URL_API_PORT=5200
+        - VUE_APP_URL_WEBSOCKET_IP=192.168.192.26
+        - VUE_APP_URL_WEBSOCKET_PORT=5200
+      volumes:
+        - ./frontend:/app
+      ports:
+        - "8080:3000"
