@@ -2,58 +2,37 @@ version: "3.1"
 services:
     frontend:
       command: development
-      environment:
-        - NODE_ENV=development
-        - VUE_APP_URL_API_IP=192.168.192.26
-        - VUE_APP_URL_API_PORT=5200
-        - VUE_APP_URL_WEBSOCKET_IP=192.168.192.26
-        - VUE_APP_URL_WEBSOCKET_PORT=5200
+      env_file: .env.development
       volumes:
         - ./frontend:/app
+        - /app/node_modules
       ports:
-        - "8080:3000"
+        - "${FRONTEND}:3000"
 
     backend:
+      env_file: .env.development
       command: python main.py
-      environment:
-        - NODE_ENV=development
-        - SERVER_HOST=0.0.0.0
-        - SERVER_PORT=5200
-        - LOG_LEVEL=info
-        - DB_PORT=27017
-        - DB_NAME=Omnis
-        - DB_HOST=mongo_c
-        - DB_USER=admin
-        - DB_PASSWORD=admin
       volumes:
         - ./backend:/app
         - /dev:/dev
       ports:
-        - "5200:5200"
+        - "${BACKEND}:5200"
     
     wswebcam_0:
-      environment:
-        - SERVER_HOST=0.0.0.0
-        - SERVER_PORT=8050
-        - DEVICE_ID=0
+      env_file: .env.development
       volumes:
         - /dev:/dev
       ports:
-        - "8050:8050"
+        - "${WEBCAM_0}:8050"
     
     marlin_0:
-      environment:
-        - SERIAL_PORT=/dev/ttyUSB0
-        - SERIAL_BAUD=115200
-        - SERVER_PORT=8010
-        - DEVICE_ID=0
+      env_file: .env.development
       ports:
-        - "8010:8010"
+        - "${MARLIN_0}:8010"
     
     mongo:
-      environment:
-        MONGO_INITDB_DATABASE: Omnis
+      env_file: .env.development
       volumes:
         - ./mongodb:/data/db
       ports:
-        - "27017:27017"
+        - "${MONGO}:27017"
