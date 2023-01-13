@@ -1,36 +1,43 @@
-NODE_ENV?=production
-env ?= .env.${NODE_ENV}
-include $(env)
-export $(shell sed 's/=.*//' $(env))
+env ?=production
+include .env.$(env)
 
-.PHONY: up
+ENV_SHORT = $(if $(findstring production,$(env)),prod,dev)
+
+COMPOSE_STRING=docker-compose -f docker-compose.yml -f docker-compose.${ENV_SHORT}.yml --env-file .env.${env}
+
+front:
+	@Echo ${ENV}, ${}
+	$(COMPOSE_STRING) --profile frontend up -d --remove-orphans
+back:
+	$(COMPOSE_STRING) --profile backend up -d --remove-orphans
+db:
+	$(COMPOSE_STRING) --profile mongo up -d --remove-orphans
 up:
-	docker-compose --env-file .env.${NODE_ENV} --profile ${NODE_ENV}  up -d --remove-orphans && make logs 
+	$(COMPOSE_STRING) --profile default up -d --remove-orphans
 
-.PHONY: down
+down-front:
+	$(COMPOSE_STRING) --profile frontend down -v
+down-back:
+	$(COMPOSE_STRING) --profile backend down -v
+down-db:
+	$(COMPOSE_STRING) --profile mongo down -v
 down:
-	docker-compose down -v
+	$(COMPOSE_STRING) --profile default down -v
 
-.PHONY: update
-update:
-	docker-compose pull
-
-.PHONY: build
-build:
-	docker-compose build
-
-.PHONY: logs
+log-front:
+	$(COMPOSE_STRING) logs -f frontend
+log-back:
+	$(COMPOSE_STRING) logs -f backend
+log-db:
+	$(COMPOSE_STRING) logs -f mongo
 logs:
-	docker-compose logs -f
+	$(COMPOSE_STRING) logs -f
 
-.PHONY: restart
+restart-front:
+	$(COMPOSE_STRING) restart frontend
+restart-back:
+	$(COMPOSE_STRING) restart backend
+restart-db:
+	$(COMPOSE_STRING) restart mongo
 restart:
-	docker-compose restart
-
-.PHONY: restart-force
-restart-force:
-	docker-compose down -v && docker-compose --env-file .env.${NODE_ENV} --profile ${NODE_ENV} up -d --remove-orphans && make logs 
-
-.PHONY: test
-test:
-	echo ${DB_PASS}
+	$(COMPOSE_STRING) restart
