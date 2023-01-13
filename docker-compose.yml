@@ -1,18 +1,49 @@
 version: "3.1"
 services:
-  wswebcam_0:
+  
+  frontend:
+    container_name: frontend
+    image: test_front
+    restart: always
     privileged: true
-    profiles: ["development"]
+    build:
+      context: ./frontend/
+    profiles:
+      - default
+      - frontend
+    networks:
+      - bind-network
+      - default
+    logging:
+      options:
+        max-size: 50m
+  
+  backend:
+    privileged: true
+    container_name: backend
+    image: omnisofc/backend:test_actions
+    links:
+      - marlin_0
+      - mongo
+    profiles:
+      - default
+      - backend
+    networks:
+      - bind-network
+    depends_on:
+      - mongo
+    logging:
+      options:
+        max-size: 50m
+
+  wswebcam_0:
     container_name: WebCam_0
     image: "omnisofc/wswebcam:latest"
-    environment:
-      - SERVER_HOST=0.0.0.0
-      - SERVER_PORT=8050
-      - DEVICE_ID=0
-    ports:
-      - "8050:8050"
-    volumes:
-      - /dev:/dev
+    restart: always
+    privileged: true
+    profiles:
+      - default
+      - wswebcam
     networks:
       - bind-network
     logging:
@@ -20,131 +51,29 @@ services:
         max-size: 50m
 
   marlin_0:
-    privileged: true
-    profiles: ["development"]
     container_name: Marlin_0
     image: "omnisofc/wspyserial:latest"
-    environment:
-      - SERIAL_PORT=/dev/ttyUSB0
-      - SERIAL_BAUD=115200
-      - SERVER_PORT=8010
-      - DEVICE_ID=0
-    ports:
-      - "8010:8010"
+    restart: always
+    privileged: true
+    profiles:
+      - default
+      - wspyserial
+      - backend
     networks:
       - bind-network
-    restart: always
 
   mongo:
-    profiles: ["development"]
-    privileged: true
-    image: mongo:4.2
     container_name: mongo_c
+    image: mongo:4.2
     restart: always
-    ports:
-      - ${DB_PORT}:27017
-    environment:
-      MONGO_INITDB_DATABASE: ${DB_NAME}
+    privileged: true
+    profiles:
+      - default
+      - mongo
+      - backend
     networks:
         - bind-network
-    volumes: 
-      - ./mongodb:/data/db
- 
-  mongo-express:
-    profiles: ["production","development"]
-    privileged: true
-    image: mongo-express:latest
-    restart: always
-    ports:
-      - 8888:8081
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo_c
-      ME_CONFIG_MONGODB_PORT: ${DB_PORT}
-
-      ME_CONFIG_BASICAUTH_USERNAME: ${EXPRESS_USER}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${EXPRESS_PASSWORD}
-
-    links:
-      - mongo
-    networks:
-      - bind-network
-    depends_on:
-      - mongo
-    volumes: 
-      - ./mongodb:/data/db
-    logging:
-      options:
-        max-size: 50m
-
-  backend:
-    profiles: ["production", "development"]
-    privileged: true
-    container_name: backend
-    image: omnisofc/backend:test_actions
-    # build:
-    #   context: ./backend
-    env_file:
-      - .env.development
-    ports:
-      - ${SERVER_PORT}:${SERVER_PORT}
-
-    environment:
-      DB_HOST: mongo_c
-      LOG_LEVEL: ${LOG_LEVEL}
-    links:
-      - mongo-express
-      - marlin_0
-
-    networks:
-      - bind-network
-    volumes:
-      # Share /dev is insecure but is required for the camera and serial devices that not has connected to the host. ( disable this if all devices are connected to the host )
-      - ./backend:/app
-      - ./.ssh:/.ssh
-      - /home/ubuntu/.url_host:/app/.url_host
-      - /dev:/dev
-      - /var/run/shutdown_signal:/shutdown_signal
-      
-    command: python main.py
-    depends_on:
-      - mongo-express
-    logging:
-      options:
-        max-size: 50m
-      
-  frontend:
-    profiles: ["production"]
-    privileged: true
-    container_name: frontend
-    image: omnisofc/frontend:latest
-    build:
-      context: ./frontend/
-    restart: always
-    volumes:
-      - ./frontend/dist:/app
-    ports:
-      - 80:80
-    networks:
-      - bind-network
-      - default
-    links:
-      - backend
-    depends_on:
-      - backend
-    logging:
-      options:
-        max-size: 50m
-  host_commands:
-    profiles: ["production"]
-    container_name: command
-    restart: unless-stopped
-    image:  omnisofc/host_commands:latest
-    build:
-      context: ./host_commands
-    ports:
-      - 3000:3000
-    volumes:
-      -  /var/run/host_signal:/command
+  
 networks: 
   bind-network:
     driver: bridge

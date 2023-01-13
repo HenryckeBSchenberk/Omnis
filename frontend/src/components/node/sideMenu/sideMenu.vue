@@ -19,7 +19,7 @@
       :absolute="drawer"
       :permanent="drawer"
     >
-      <move></move>
+      <move :actualStatus="actualStatus"></move>
     </v-navigation-drawer>
   </div>
 </template>
@@ -39,7 +39,12 @@ export default {
   data: () => ({
     drawer: false,
     group: null,
+    actualStatus: 'stopped',
   }),
+
+  created() {
+    this.connectToWebsocket();
+  },
 
   computed: {
     navigationDrawer() {
@@ -58,7 +63,38 @@ export default {
     group() {
       this.drawer = false;
     },
+  
   },
+
+  methods:{
+    connectToWebsocket() {
+      console.log(this.$t('alerts.wsConnecting'));
+      this.WebSocket = new WebSocket(
+        `ws://${process.env.VUE_APP_URL_API_IP}:${process.env.VUE_APP_URL_API_PORT}/process`
+      );
+
+      this.WebSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        this.actualStatus = data.status.toLowerCase();
+      };
+
+      this.WebSocket.onopen = (event) => {
+        console.log(event);
+        console.log(this.$t('alerts.wsConnectSuccess'));
+      };
+
+      this.WebSocket.onclose = (event) => {
+        console.log(
+          'Socket is closed. Reconnect will be attempted in 1 second.',
+          event.reason
+        );
+        setTimeout(
+          () => this.connectToWebsocket(),
+          Math.floor(Math.random() * 2500)
+        );
+      };
+    },
+  }
 };
 </script>
 

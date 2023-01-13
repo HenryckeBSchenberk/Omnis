@@ -1,0 +1,38 @@
+version: "3.1"
+services:
+    frontend:
+      command: development
+      env_file: .env.development
+      volumes:
+        - ./frontend:/app
+        - /app/node_modules
+      ports:
+        - "${FRONTEND}:3000"
+
+    backend:
+      env_file: .env.development
+      command: python main.py
+      volumes:
+        - ./backend:/app
+        - /dev:/dev
+      ports:
+        - "${BACKEND}:5200"
+    
+    wswebcam_0:
+      env_file: .env.development
+      volumes:
+        - /dev:/dev
+      ports:
+        - "${WEBCAM_0}:8050"
+    
+    marlin_0:
+      env_file: .env.development
+      ports:
+        - "${MARLIN_0}:8010"
+    
+    mongo:
+      env_file: .env.development
+      volumes:
+        - ./mongodb:/data/db
+      ports:
+        - "${MONGO}:27017"
