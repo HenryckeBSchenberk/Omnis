@@ -8,24 +8,25 @@ services:
 
     backend:
       env_file: .env.production
-      command: python main.py
+      volumes:
+        - /dev:/dev
       ports:
-        - "${BACKEND}:5200"
+        - "${BACKEND}:${SERVER_PORT}"
     
     wswebcam_0:
       env_file: .env.production
       volumes:
         - /dev:/dev
       ports:
-        - "${WEBCAM_0}:8050"
+        - "${WEBCAM_0}:${SERVER_PORT}"
     
     marlin_0:
       env_file: .env.production
       volumes:
         - /dev:/dev
       ports:
-        - "${MARLIN_0}:8010"
-    
+        - "${MARLIN_0}:${SERVER_PORT}"
+
     mongo:
       env_file: .env.production
       volumes:
