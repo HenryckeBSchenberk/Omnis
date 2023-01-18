@@ -4,7 +4,7 @@ from ariadne import QueryType
 query = QueryType()
 
 from src.nodes.node_manager import NodeManager
-from src.nodes.node_registry import NodeRegistry
+# from src.nodes.node_registry import NodeRegistry
 from threading import enumerate as thread_enumerate
 from src.manager.camera_manager import CameraManager
 from src.nodes.serial.manager import Manager as SerialManager
@@ -41,14 +41,14 @@ def resolve_getCameras( **kwargs):
     return {"status": True, "data": CameraManager.get()}
 
 
-@query.field("getNodeInfo")
-@auth('operator')
-def resolve_getNodeInfo( node_type, **kwargs):
-    """Get a Node by id and return it like a payload"""
-    result = (NodeRegistry.getNodeClassByName(node_type)).get_info(
-        **kwargs.get("kwargs", {})
-    )
-    return {"status": True, "data": result}
+# @query.field("getNodeInfo")
+# @auth('operator')
+# def resolve_getNodeInfo( node_type, **kwargs):
+#     """Get a Node by id and return it like a payload"""
+#     result = (NodeRegistry.getNodeClassByName(node_type)).get_info(
+#         **kwargs.get("kwargs", {})
+#     )
+#     return {"status": True, "data": result}
 
 
 @query.field("getManutention")
