@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from os import environ, getenv
@@ -13,9 +12,6 @@ from bson.errors import InvalidDocument
 from bson import DBRef, ObjectId
 from threading import Event
 
-load_dotenv()
-load_dotenv(f'.env.{environ.get("NODE_ENV")}')
-
 url = (
     f"mongodb://{getenv('DB_HOST', '0.0.0.0')}:{environ.get('DB_PORT', '27017')}/"
     if environ.get("DB_MODE") != "cloud"
@@ -24,12 +20,11 @@ url = (
 
 _db = None
 
-
 @exception(logger)
 def getDb():
     global _db
     if _db is None:
-        _db = MongoOBJ(environ.get("DB_NAME"), url)
+        _db = MongoOBJ(environ.get("DB_NAME", "Omnis"), url)
         custom_handler(logger, "mongo", "json",  _db, levels[lvl]) #! Works?
     return _db
 

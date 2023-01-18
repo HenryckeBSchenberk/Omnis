@@ -1,6 +1,5 @@
 from os import environ, makedirs, path
 from platform import system
-from dotenv import load_dotenv
 from .log import logger, exception, custom_handler, logger, levels, lvl
 from .decorators import for_all_methods
 import jwt
@@ -9,8 +8,6 @@ from graphql.error import GraphQLError
 
 from src.manager.mongo_manager import connectToMongo, getDb
 
-load_dotenv()
-load_dotenv(f'.env.{environ.get("NODE_ENV")}')
 environ.setdefault("SO", system())
 
 connectToMongo()

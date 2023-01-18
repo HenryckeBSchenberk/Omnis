@@ -6,7 +6,6 @@ ENV_SHORT = $(if $(findstring production,$(env)),prod,dev)
 COMPOSE_STRING=docker-compose -f docker-compose.yml -f docker-compose.${ENV_SHORT}.yml --env-file .env.${env}
 
 front:
-	@Echo ${ENV}, ${}
 	$(COMPOSE_STRING) --profile frontend up -d --remove-orphans
 back:
 	$(COMPOSE_STRING) --profile backend up -d --remove-orphans
