@@ -66,18 +66,18 @@ class CRUD:
         dbo.update_one(
             kwargs.get("collection", self.collection),
             {"_id": _id},
-            {"$set": kwargs.get("input", {"input":{}})},
+            {"$set": kwargs.get("input", {})},
         )
         return _id
 
-    async def duplicate(self, *args, **kwargs):
-        item = await self.get_item(*args, **kwargs)
+    def duplicate(self, *args, **kwargs):
+        item = self.get_item(*args, **kwargs)
         item.pop("_id")
         kwargs.pop("_id")
         if item.get("name"):
             item.update({"name": item["name"] + " - copy"})
         new_id = self.create(*args, **kwargs, input=item)
-        self.update(*args, **kwargs, _id=new_id)
+        self.update(*args, **kwargs, _id=new_id) #???
         return new_id
 
     def delete(self, *args, **kwargs):
@@ -85,13 +85,14 @@ class CRUD:
         dbo.delete_one(kwargs.get("collection", self.collection), {"_id": _id})
         return _id
 
-    async def get_list(self, *args, **kwargs):
-        return dbo.find_many(kwargs.get("collection", self.collection), ref=True)
+    def get_list(self, *args, **kwargs):
+        return dbo.find_many(kwargs.get("collection", self.collection), ref=False)
 
-    async def get_item(self, *args, **kwargs):
+    def get_item(self, *args, **kwargs):
         return dbo.find_one(
             kwargs.get("collection", self.collection),
             {"_id": ObjectId(kwargs.get("_id"))},
+            kwargs.get("filter", {}),
         )
 
 

@@ -1,5 +1,5 @@
 from bson import ObjectId
-
+from bson.dbref import DBRef
 
 class Person:
     def __init__(self, first_name, last_name) -> None:
@@ -45,7 +45,7 @@ class User(Person):
         self.avatar_image = avatar_image
         self.__level = level
         self._id = ObjectId(_id)
-        self.dbref = {"$ref":"users", "$id":self._id}
+        self.dbref = DBRef("users", self._id)
 
     @property
     def level(self):
