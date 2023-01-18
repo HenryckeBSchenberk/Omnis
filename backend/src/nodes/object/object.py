@@ -1,18 +1,20 @@
 from bson import ObjectId as new_id
-
 from .manager import Manager
+
 
 class Object:
     def __init__(self, content={}, _id=None):
-        self.__dict__['_id'] = new_id(_id)          # Create new id if not exist
-        
-        if  self._id not in Manager.store:          # IF not exist, create new content and add to manager.
+        # Create new id if not exist
+        self.__dict__['_id'] = new_id(_id)
+
+        # IF not exist, create new content and add to manager.
+        if self._id not in Manager.store:
             for key, value in content.items():
                 self.__dict__[key] = value
             Manager.add(self)
-        else:                                       # IF an object with same id exist, get the content and update it.
+        # IF an object with same id exist, get the content and update it.
+        else:
             self.__update(content)
-
 
     def __getattr__(self, name):
         return self.__get(name)
@@ -22,7 +24,7 @@ class Object:
 
     def __setitem__(self, name, value):
         self.__set(name, value)
-    
+
     def __getitem__(self, name):
         return self.__get(name)
 
@@ -36,18 +38,16 @@ class Object:
 
     def load(self, data):
         self.__update(data)
-    
+
     def export(self):
         return {'_id': self._id, **self.__dict__}
 
-    def __update(self,content):
-         for key, value in content.items():
-                Manager.get_by_id(self._id).__dict__[key] = value
-        #  Manager.get_by_id(self._id).__dict__['content'].update(content)
+    def __update(self, content):
+        for key, value in content.items():
+            Manager.get_by_id(self._id).__dict__[key] = value
 
     def __str__(self):
         return str(self.export())
 
     def __repr__(self):
         return self.__str__()
-        
