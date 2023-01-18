@@ -1,33 +1,13 @@
 scalar DBREF_object
 
 type object {
-  _id: ID!
-  name: String!
-  description: String
-  part_number: String
-  supplier: String
-  parts: Int
-  unit: String
-  color_hex: String
-  color_name: String
-  img: String
-  date: timestamptz
-  variable: [variable]
-  matrix: [matrix]
+    _id: ID!
+    content: JSON!
 }
 
 input reg_object {
-  name: String!
-  description: String
-  part_number: String
-  supplier: String
-  parts: Int
-  unit: String
-  color_hex: String
-  color_name: String
-  img: String
-  variable: [DBREF_variable]
-  matrix: [DBREF_matrix]
+    _id: ID!
+    content: JSON!
 }
 
 extend type Query {
@@ -35,9 +15,9 @@ extend type Query {
     get_object_item(_id: ID!): object
 }
 
-extend type Mutation  {
-  create_object(input: reg_object): ID
-  delete_object(_id: ID!): ID
-  duplicate_object(_id: ID!): ID
-  update_object(_id: ID!, input: reg_object): ID
+extend type Mutation {
+    create_update(input: reg_object): ID
+    update_update(input: reg_object): ID
+    delete_update(_id: ID!): ID
+    duplicate_update(_id: ID!): ID
 }
