@@ -68,7 +68,6 @@ for mod in package_nodes:
         )
     )
 
-from src.nodes.object.object import __object
 from src.nodes.variable.variable import __variable
 from src.nodes.sketch.sketch import __sketch
 from src.nodes.levels.levels import __levels
