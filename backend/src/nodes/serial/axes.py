@@ -1,6 +1,7 @@
+from bson import ObjectId as new_id
 class axis:
     def __init__(self, _id, name, board, sensors):
-        self._id = str(_id)
+        self._id = new_id(_id)
         self.name = name
         self.board_id = board
         self.sensors = sensors

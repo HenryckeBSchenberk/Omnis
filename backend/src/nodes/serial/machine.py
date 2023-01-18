@@ -1,6 +1,6 @@
 from asyncio import sleep, wait_for
 from api.websocket import ConnectionManager
-from uuid import uuid4
+from bson import ObjectId as new_id
 from .gcode import GCODE
 from datetime import datetime, timedelta
 
@@ -107,7 +107,7 @@ class Machine_Websocket_API(ConnectionManager):
 class Machine:
     def __init__(self, parser, axis=None, pins=None, _id=None, name="default_machine") -> None:
         self.name = name
-        self._id = _id or uuid4().hex
+        self._id = new_id(_id)
         self.__homed = [False, datetime.utcnow()]
         self.__last_position = {}
         self.whiout_error = True

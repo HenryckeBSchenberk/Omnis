@@ -1,7 +1,7 @@
-from uuid import uuid4
+from bson import ObjectId as new_id
 
 def get_id(payload):
-    _id = str(getattr(payload, '_id', uuid4().hex))
+    _id = new_id(getattr(payload, '_id', None))
     payload._id = _id
     return _id
 
@@ -27,6 +27,6 @@ class Camera_Manager():
         return self.remove_by_id(_id)
 
     def get_by_id(self, _id):
-        return self.store.get(str(_id), None)
+        return self.store.get(new_id(_id), None)
 
 Manager = Camera_Manager()

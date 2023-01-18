@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
-from uuid import uuid4
+from bson import ObjectId as new_id
 
 class Sensor:
     def __init__(self, name, type, status, _id=None):
-        self._id = _id or uuid4().hex
+        self._id = new_id(_id)
         self.name = name
         self.type = type
         self.status = status
