@@ -4,19 +4,13 @@ from src.nodes.object.object import Object, Manager
 from src.utility.crud.user import User
 
 
-def OBJECT_Parser(value, reference=False):
-    sequence = value['value'].split('.')
-    obj = Manager.get_by_id(value['_id'])
-
-    for attr in sequence:
-        obj = getattr(obj, attr)
-
-    return [obj] if reference else obj
-
-
 class BasicOperations(unittest.TestCase):
     def setUp(self):
         self.object = Object(**{"name": "object_name", "type": "object_test"})
+
+    def tearDown(self):
+        Manager.remove_by_id(self.object._id)
+        self.assertFalse(Manager.store)
 
     def test_AccessAsAttribute(self):
         self.assertEqual(self.object.name, "object_name")
@@ -37,7 +31,6 @@ class BasicOperations(unittest.TestCase):
 
 class UseCases(unittest.TestCase):
     def setUp(self):
-
         self.A_id = new_id()
         self.B_id = new_id()
 
@@ -66,30 +59,45 @@ class UseCases(unittest.TestCase):
             }
         }
 
+    def tearDown(self):
+        Manager.remove_by_id(self.A_id)
+        Manager.remove_by_id(self.B_id)
+        self.assertFalse(Manager.store)
+
     def test_AutoSubscribeOnManager(self):
         self.assertTrue(Manager.get_by_id(self.A_id) is self.A)
         self.assertTrue(Manager.get_by_id(self.B_id) is self.B)
 
-    def test_ParserSimpleAttribute(self):
-        self.assertEqual(OBJECT_Parser(self.options['A']['name']), self.A.name)
-
-    def test_ParserComplexAttribute(self):
-        self.assertEqual(OBJECT_Parser(
-            self.options['B']['parent_id']), self.A_id)
-
     def test_IntegrityBetweenInstances(self):
-        _id = new_id()
         object1 = Object(
-            _id, **{"name": "object_name1", "type": "object_test"})
+            self.A_id, **{"name": "object_name1", "type": "object_test"}
+        )
         self.assertEqual(object1.name, "object_name1")
 
         object2 = Object(
-            _id, **{"name": "object_name2", "type": "object_test"})
+            self.A_id, **{"name": "object_name2", "type": "object_test"}
+        )
         self.assertTrue(object1.name is object2.name)
 
         new_name = "SampleText"
         object1.name = new_name
         self.assertTrue(object1.name is object2.name is new_name)
+
+    def test_ObjectParser(self):
+        payload = "${object_A.name}"
+
+        static_value, obj, key = Manager.parser(payload)
+        self.assertIs(obj, self.A)
+        self.assertEqual(static_value, self.A.name)
+
+        self.A.name = "new_name"
+        self.assertNotEqual(static_value, self.A.name)  # Static_value not change;
+        self.assertEqual(obj[key], self.A.name)
+
+    def test_ParserException(self):
+        payload = "${object_A.name"
+        with self.assertRaises(ValueError):
+            Manager.parser(payload)
 
 
 class CRUD_Object(unittest.TestCase):
@@ -97,6 +105,10 @@ class CRUD_Object(unittest.TestCase):
         self.object = Object(**{"name": "object_name", "type": "object_test"})
         self.object_id = self.object._id
         self.user = User('omnis', 'process', 'developer', '')
+
+    def tearDown(self):
+        Manager.remove_by_id(self.object_id)
+        self.assertFalse(Manager.store)
 
     def test_Export(self):
         self.assertEqual(self.object.export(), {
@@ -123,6 +135,8 @@ class CRUD_Object(unittest.TestCase):
         self.assertEqual(duplicated_object['name'], self.object.name)
         self.assertTrue(duplicated_object['_id'] != self.object_id)
 
+        Manager.remove_by_id(duplicate_id)
+
         updated_id = Manager.update(
             _id=self.object_id,
             input={
@@ -140,7 +154,7 @@ class CRUD_Object(unittest.TestCase):
         self.assertEqual(
             get_updated["content"],
             {"name": "new_name", "type": "new_type"}
-            )
+        )
 
         delete_original_id = Manager.delete(_id=self.object_id, user=self.user)
         delete_duplicate_id = Manager.delete(_id=duplicate_id, user=self.user)
@@ -153,5 +167,5 @@ class CRUD_Object(unittest.TestCase):
             _id=delete_duplicate_id,
             user=self.user
         )
-        
+
         self.assertTrue(deleted_duplicate is deleted_original is None)
