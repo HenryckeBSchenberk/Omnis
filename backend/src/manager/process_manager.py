@@ -16,6 +16,7 @@ class ProcessObjectManager(SSPR, BaseManager):
         BaseManager.__init__(self)
         self._id = "status"
         self.loaded_id = None
+        self.selected_process_id = None
         for process in dbo.find_many(self.collection):
             self.add(Process(**process))
             self.selected_process_id = process['_id']
@@ -67,15 +68,15 @@ class ProcessObjectManager(SSPR, BaseManager):
             if config:
                 self.add(Process(**config))
                 return self.process
-            else:
-                raise KeyError("PROCESS NOT FOUND, IF EXIST TRY REBOOT")
+            return None
+                # raise KeyError("PROCESS NOT FOUND, IF EXIST TRY REBOOT")
     
     @process.setter
     def process(self, _id):
         self.selected_process_id = _id
 
     def status(self):
-        return self.__status[0].status
+        return getattr(self.__status[0], 'status', {'status': 'UNKNOWN'})
     
 
     def load(self, _id=False):
