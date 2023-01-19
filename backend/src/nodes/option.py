@@ -25,7 +25,7 @@ class Option:
             {
                 key: Option.bind(
                     *Manager.parser(value)
-                ) if value.startswith("$") else value
+                ) if isinstance(value, str) and value.startswith("$") else value
                 for key, value in descritor.items()
             }
         )
