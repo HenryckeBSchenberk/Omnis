@@ -3,6 +3,10 @@ scalar DBREF_object
 type object {
     _id: ID!
     content: JSON!
+    created_at: timestamptz!
+    created_by: user!
+    edited_by: user
+    updated_at: timestamptz
 }
 
 input reg_object {
@@ -16,8 +20,8 @@ extend type Query {
 }
 
 extend type Mutation {
-    create_update(input: reg_object): ID
-    update_update(input: reg_object): ID
-    delete_update(_id: ID!): ID
-    duplicate_update(_id: ID!): ID
+    create_object(input: reg_object): ID
+    update_object(input: reg_object): ID
+    delete_object(_id: ID!): ID
+    duplicate_object(_id: ID!): ID
 }
