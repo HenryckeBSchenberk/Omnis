@@ -33,12 +33,12 @@ class Observer(object):
 from api.websocket import ConnectionManager
 
 class Node_Websocket_API(ConnectionManager):
-    def __init__(self, _id):
+    def __init__(self, _id=None):
         super().__init__(_id)
 
 
 class BaseNode(Observer):
-    websocket_route = Node_Websocket_API('0000')
+    websocket_route = Node_Websocket_API()
     """
     A class that represents a node, and its properties.
 
@@ -75,6 +75,7 @@ class BaseNode(Observer):
         self.running = True
         self.stop_event = Event()
         self.auto_run = options.get("auto_run", False)
+        self.user = User('omnis', 'node_executor', 'developer', '')
         logger.debug(f"[{type(self).__name__}] || {self.name} Node loaded")
 
     def Notify_Execution(payload_before={}, payload_after={}):
