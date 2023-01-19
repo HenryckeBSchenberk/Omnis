@@ -61,6 +61,6 @@ class ObjectNode(BaseNode):
     def get_info(**kwargs):
         return {
             "options": {
-                "objects": list(ObjectManager.get_list(filter={"content":1})),
+                "objects": list(ObjectManager.get_list(filter={"content": 1})),
             }
         }

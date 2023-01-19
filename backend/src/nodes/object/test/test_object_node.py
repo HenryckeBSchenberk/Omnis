@@ -1,4 +1,5 @@
 import unittest
+# ! Import NodeRegistry register all NodeClass, try whiout this will fail with circular import error.
 from src.nodes.node_registry import NodeRegistry
 from src.nodes.object.object_node import ObjectNode, ObjectManager
 from src.utility.crud.user import User
