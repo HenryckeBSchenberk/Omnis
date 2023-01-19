@@ -11,7 +11,7 @@ def get_id(payload):
 
 class Object_Manager(CRUD):
     def __init__(self) -> None:
-        CRUD.__init__(self, "object", None)
+        CRUD.__init__(self, "object", 'operator')
         self.store = {}
 
     def add(self, payload):
