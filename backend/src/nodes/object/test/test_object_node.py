@@ -27,16 +27,16 @@ class TestObjectNode(unittest.TestCase):
         new_pointer = node.object.export()
         new_content = new_pointer['content']
 
-        self.assertFalse(old_pointer is new_pointer)    # different object
+        self.assertIsNot(old_pointer, new_pointer)    # different object
         # same content, because it's the content is the same, since is a internal dict updated.
         self.assertEqual(old_pointer, new_pointer)
 
-        self.assertFalse(old_contet is new_content)    # different object
+        self.assertIsNot(old_contet, new_content)    # different object
         # different content, because old_content use ".copy()" to create a new dict.
-        self.assertTrue(old_contet != new_content)
+        self.assertNotEqual(old_contet, new_content)
 
         # same content, because is a internal dict updated.
-        self.assertTrue(old_pointer['content'] == new_pointer['content'])
+        self.assertEqual(old_pointer['content'], new_pointer['content'])
 
     def test_ExecutionDataSyncDBO(self):
         node = ObjectNode("UnitTest_ObjectNode", self.object_id, {"_id": self.object_id, "content": {
