@@ -3,18 +3,17 @@ from .manager import Manager
 
 
 class Object:
-    def __init__(self, content={}, _id=None):
+    def __init__(self, _id=None, **content):
         # Create new id if not exist
         self.__dict__['_id'] = new_id(_id)
 
         # IF not exist, create new content and add to manager.
         if self._id not in Manager.store:
-            for key, value in content.items():
-                self.__dict__[key] = value
+            self.__dict__["content"] = content.get("content", content)
             Manager.add(self)
         # IF an object with same id exist, get the content and update it.
         else:
-            self.__update(content)
+            self.__update(**content)
 
     def __getattr__(self, name):
         return self.__get(name)
@@ -30,21 +29,20 @@ class Object:
 
     def __get(self, name):
         # Get from mamaner the object with same id and get the content
-        return Manager.get_by_id(self._id).__dict__.get(name, None)
+        return Manager.get_by_id(self._id).__dict__["content"].get(name, None)
 
     def __set(self, name, value):
         # Get from mamaner the object with same id and set the content
-        Manager.get_by_id(self._id).__dict__[name] = value
+        Manager.get_by_id(self._id).__dict__["content"][name] = value
 
-    def load(self, data):
-        self.__update(data)
+    def load(self, **data):
+        self.__update(**data)
 
     def export(self):
         return {'_id': self._id, **self.__dict__}
 
-    def __update(self, content):
-        for key, value in content.items():
-            Manager.get_by_id(self._id).__dict__[key] = value
+    def __update(self, **content):
+        Manager.get_by_id(self._id).__dict__["content"].update(content.get("content", content))
 
     def __str__(self):
         return str(self.export())

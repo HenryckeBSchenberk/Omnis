@@ -16,7 +16,7 @@ def OBJECT_Parser(value, reference=False):
 
 class BasicOperations(unittest.TestCase):
     def setUp(self):
-        self.object = Object({"name": "object_name", "type": "object_test"})
+        self.object = Object(**{"name": "object_name", "type": "object_test"})
 
     def test_AccessAsAttribute(self):
         self.assertEqual(self.object.name, "object_name")
@@ -41,8 +41,8 @@ class UseCases(unittest.TestCase):
         self.A_id = new_id()
         self.B_id = new_id()
 
-        self.A = Object({"name": "object_A"}, self.A_id)
-        self.B = Object({"name": "object_B", "parent": self.A}, self.B_id)
+        self.A = Object(self.A_id, **{"name": "object_A"})
+        self.B = Object(self.B_id, **{"name": "object_B", "parent": self.A})
 
         self.options = {
             "A": {
@@ -79,10 +79,12 @@ class UseCases(unittest.TestCase):
 
     def test_IntegrityBetweenInstances(self):
         _id = new_id()
-        object1 = Object({"name": "object_name1", "type": "object_test"}, _id)
+        object1 = Object(
+            _id, **{"name": "object_name1", "type": "object_test"})
         self.assertEqual(object1.name, "object_name1")
 
-        object2 = Object({"name": "object_name2", "type": "object_test"}, _id)
+        object2 = Object(
+            _id, **{"name": "object_name2", "type": "object_test"})
         self.assertTrue(object1.name is object2.name)
 
         new_name = "SampleText"
@@ -92,18 +94,18 @@ class UseCases(unittest.TestCase):
 
 class CRUD_Object(unittest.TestCase):
     def setUp(self):
-        self.object = Object({"name": "object_name", "type": "object_test"})
+        self.object = Object(**{"name": "object_name", "type": "object_test"})
         self.object_id = self.object._id
         self.user = User('omnis', 'process', 'developer', '')
 
     def test_Export(self):
         self.assertEqual(self.object.export(), {
-                         '_id': self.object_id, 'name': 'object_name', 'type': 'object_test'})
+                         '_id': self.object_id, 'content': {'name': 'object_name', 'type': 'object_test'}})
 
     def test_Load(self):
-        self.object.load({"name": "new_name", "type": "new_type"})
+        self.object.load(**{"name": "new_name", "type": "new_type"})
         self.assertEqual(self.object.export(), {
-                         '_id': self.object_id, 'name': 'new_name', 'type': 'new_type'})
+                         '_id': self.object_id, 'content': {'name': 'new_name', 'type': 'new_type'}})
 
     def test_CRUD(self):
         exported = self.object.export()
@@ -114,22 +116,42 @@ class CRUD_Object(unittest.TestCase):
 
         duplicate_id = Manager.duplicate(_id=self.object_id, user=self.user)
         get_duplicate = Manager.get_item(
-            _id=duplicate_id, user=self.user, filter={'name': 1})
-        self.assertEqual(get_duplicate['name'], "object_name - copy")
-        self.assertTrue(get_duplicate['_id'] != self.object_id)
+            _id=duplicate_id, user=self.user)
 
-        updated_id = Manager.update(_id=self.object_id, input={
-                                    "name": "new_name", "type": "new_type"}, user=self.user)
+        duplicated_object = Object(**get_duplicate)
+
+        self.assertEqual(duplicated_object['name'], self.object.name)
+        self.assertTrue(duplicated_object['_id'] != self.object_id)
+
+        updated_id = Manager.update(
+            _id=self.object_id,
+            input={
+                "content": {
+                    "name": "new_name",
+                    "type": "new_type"
+                }
+            },
+            user=self.user
+        )
         get_updated = Manager.get_item(
-            _id=updated_id, user=self.user, filter={"name": 1, "type": 1})
+            _id=updated_id,
+            user=self.user
+        )
         self.assertEqual(
-            get_updated, {"_id": updated_id, "name": "new_name", "type": "new_type"})
+            get_updated["content"],
+            {"name": "new_name", "type": "new_type"}
+            )
 
         delete_original_id = Manager.delete(_id=self.object_id, user=self.user)
         delete_duplicate_id = Manager.delete(_id=duplicate_id, user=self.user)
 
         deleted_original = Manager.get_item(
-            _id=delete_original_id, user=self.user)
+            _id=delete_original_id,
+            user=self.user
+        )
         deleted_duplicate = Manager.get_item(
-            _id=delete_duplicate_id, user=self.user)
+            _id=delete_duplicate_id,
+            user=self.user
+        )
+        
         self.assertTrue(deleted_duplicate is deleted_original is None)
