@@ -91,7 +91,8 @@ class UseCases(unittest.TestCase):
         self.assertEqual(static_value, self.A.name)
 
         self.A.name = "new_name"
-        self.assertNotEqual(static_value, self.A.name)  # Static_value not change;
+        # Static_value not change;
+        self.assertNotEqual(static_value, self.A.name)
         self.assertEqual(obj[key], self.A.name)
 
     def test_ParserException(self):

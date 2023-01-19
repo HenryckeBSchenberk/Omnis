@@ -56,8 +56,7 @@ class Object_Manager(CRUD):
                 obj = self.get_by_name(match.group('name'))
                 if obj:
                     return getattr(obj, match.group('prop')), obj, match.group('prop')
-                return obj, False
-            return False, None
+            return None, None, None
         raise ValueError("Invalid string format, it should be '${0}', but it was '{1}'".format(
             "{object_name.prop}", string))
 
