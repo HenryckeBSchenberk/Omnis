@@ -9,6 +9,9 @@ class CRUD:
     def __init__(self, collection, auth_level):
         self.collection = collection
         self.auth_level = auth_level
+        if auth_level is None: 
+            self.auth_level = 'developer'
+            logger.warning(f"Auth level not set for {collection}_CRUD, defaulting to {self.auth_level}")
 
         self.create = (
             (auth(self.auth_level))(self.create) if self.auth_level else self.create
@@ -86,7 +89,7 @@ class CRUD:
         return _id
 
     def get_list(self, *args, **kwargs):
-        return dbo.find_many(kwargs.get("collection", self.collection), ref=False)
+        return dbo.find_many(kwargs.get("collection", self.collection), kwargs.get("filter", {}), ref=False)
 
     def get_item(self, *args, **kwargs):
         return dbo.find_one(
