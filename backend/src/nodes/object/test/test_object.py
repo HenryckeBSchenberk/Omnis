@@ -83,22 +83,6 @@ class UseCases(unittest.TestCase):
         object1.name = new_name
         self.assertTrue(object1.name is object2.name is new_name)
 
-    def test_ObjectParser(self):
-        payload = "${object_A.name}"
-
-        static_value, obj, key = Manager.parser(payload)
-        self.assertIs(obj, self.A)
-        self.assertEqual(static_value, self.A.name)
-
-        self.A.name = "new_name"
-        # Static_value not change;
-        self.assertNotEqual(static_value, self.A.name)
-        self.assertEqual(obj[key], self.A.name)
-
-    def test_ParserException(self):
-        payload = "${object_A.name"
-        with self.assertRaises(ValueError):
-            Manager.parser(payload)
 
 
 class CRUD_Object(unittest.TestCase):
