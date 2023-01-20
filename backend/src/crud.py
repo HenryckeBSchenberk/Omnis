@@ -3,6 +3,7 @@ from api.mutations import mutation
 from api.queries import query
 from bson import ObjectId
 from datetime import datetime
+from src.utility.crud.user import User
 
 
 class CRUD:
@@ -12,6 +13,8 @@ class CRUD:
         if auth_level is None: 
             self.auth_level = 'developer'
             logger.warning(f"Auth level not set for {collection}_CRUD, defaulting to {self.auth_level}")
+            
+        self.user = User(f'{collection}', 'CRUD', self.auth_level, '')
 
         self.create = (
             (auth(self.auth_level))(self.create) if self.auth_level else self.create
@@ -93,9 +96,9 @@ class CRUD:
 
     def get_item(self, *args, **kwargs):
         return dbo.find_one(
-            kwargs.get("collection", self.collection),
-            {"_id": ObjectId(kwargs.get("_id"))},
-            kwargs.get("filter", {}),
+            collection_name=kwargs.get("collection", self.collection),
+            query=kwargs.get("query", {"_id": ObjectId(kwargs.get("_id"))}),
+            data=kwargs.get("filter", {}),
         )
 
 

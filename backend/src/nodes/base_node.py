@@ -2,6 +2,7 @@ import functools
 from src.nodes.alerts.alert_obj import Alert
 from src.message import Message
 from src.nodes.node_manager import NodeManager
+from src.nodes.option import Option
 from api import logger, exception
 from api.store import nodes
 from api.subscriptions import SubscriptionFactory
@@ -70,7 +71,7 @@ class BaseNode(Observer):
         self.name = name
         self.type = type_
         self._id = id
-        self.options = options
+        self.options = Option(options)
         self.output_connections = {item._from.name: item for item in output_connections }
         self.running = True
         self.stop_event = Event()
@@ -159,7 +160,6 @@ class BaseNode(Observer):
             "auto_run",
         )
         self.reset()
-        print("AutoRun", self, message)
         self.loop.create_task(self.execute(message))
 
     def pause(self):
