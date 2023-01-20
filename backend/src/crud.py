@@ -14,7 +14,7 @@ class CRUD:
             self.auth_level = 'developer'
             logger.warning(f"Auth level not set for {collection}_CRUD, defaulting to {self.auth_level}")
             
-        self.user = User('crud_user', '', self.auth_level, '')
+        self.user = User(f'{collection}', 'CRUD', self.auth_level, '')
 
         self.create = (
             (auth(self.auth_level))(self.create) if self.auth_level else self.create
