@@ -65,7 +65,7 @@ const LIST_OBJECT = gql`
   query LIST_OBJECT {
     get_object_list {
       _id
-      name
+      content
     }
   }
 `;
@@ -74,7 +74,7 @@ const LIST_MATRIX = gql`
   query LIST_MATRIX {
     get_matrix_list {
       _id
-      name
+      content
     }
   }
 `;

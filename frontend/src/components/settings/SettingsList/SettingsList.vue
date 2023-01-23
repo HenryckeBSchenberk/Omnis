@@ -89,7 +89,6 @@ export default {
     return {
       search: null,
       show: false,
-      // itemsCopy: [{}],
       model: null,
       dropdown: {
         value: '',
@@ -99,16 +98,10 @@ export default {
   },
 
   watch: {
-    // items() {
-    //   this.makeCopy();
-    // },
     search(newValue, oldValue) {
-      // console.log(newValue, oldValue);
       if (!newValue) {
         this.makeCopy();
-        // console.log('dasdad', this.itemsCopy);
       }
-      // this.filter();
     },
   },
 
@@ -121,14 +114,11 @@ export default {
   methods: {
     makeCopy() {
       if (this.search) {
-        // console.log('model', this.model);
-        // console.log('search', this.search);
         return this.items.filter((value) => {
           return value[this.itemSearch] === this.search;
         });
       }
       return this.items;
-      // console.log('itemsCopy', this.itemsCopy);
     },
 
     filter() {

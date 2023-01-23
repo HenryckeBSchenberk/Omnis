@@ -14,7 +14,6 @@
 </template>
 
 <script>
-// import mixins from "../_linkers/conectors.js";
 import { mapActions, mapState } from 'vuex';
 
 export default {
@@ -70,7 +69,7 @@ export default {
   display: grid;
   place-items: center;
   height: 100%;
-  background-color: #da2829;
+  background-color: #d53329;
 
   .video {
     width: 80vw;

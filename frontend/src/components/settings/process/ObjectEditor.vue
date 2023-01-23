@@ -1,74 +1,53 @@
 <template>
   <div class="object-register mt-11">
-    <v-form v-model="isValid" ref="form" max-width="700px" lazy-validation>
-      <div v-for="(item, index) in items" :key="index" v-on="generateObj(item)">
-        <v-autocomplete
-          class="select"
-          v-if="autocompleteFields.includes(item.field)"
-          :label="$t('form.' + item.field) + (item.required ? '*' : '')"
-          rounded
-          multiple
-          outlined
-          v-model="obj[item.field]"
-          :rules="item.required ? [rules().required] : [true]"
-          :items="
-            item.field == 'variable' ? get_variable_list : get_matrix_list
-          "
-          item-text="name"
-          return-object
-          chips
-          deletable-chips
-        ></v-autocomplete>
-
+    <v-form ref="form" v-model="valid" lazy-validation>
+      <div v-for="item in updated_items" :key="item.field">
         <v-text-field
-          v-else
-          :label="$t('form.' + item.field) + (item.required ? '*' : '')"
+          v-model="obj[item.field]"
+          @click:append="dellItem(item)"
+          :append-icon="item.field == 'name' ? '' : 'mdi-trash-can'"
+          :label="
+            (item.field == 'name' ? $t('form.' + item.field) : item.field) + '*'
+          "
+          :rules="[(v) => !!v || $t('form.required') + '!']"
+          outlined
+          rounded
+          dense
+        >
+        </v-text-field>
+      </div>
+      <!-- 2 Flexible input fields for add new item on items list -->
+      <v-divider class="mt-4"></v-divider>
+      <div class="d-flex mt-4">
+        <v-text-field
+          class="mr-4"
+          v-model="newItem"
+          :label="$t('form.key')"
           placeholder=""
           outlined
           rounded
-          v-model="obj[item.field]"
           dense
-          :rules="item.required ? [rules().required] : [true]"
-          full-width
-          @keyup.enter="colorShow = false"
+          @keyup.enter="addItem()"
         >
-          <template v-slot:prepend-inner v-if="item.field == 'color_hex'">
-            <v-badge
-              class="mb-n2"
-              bordered
-              inline
-              :color="obj[item.field]"
-            ></v-badge>
-          </template>
-          <template v-slot:append v-if="item.field == 'color_hex'">
-            <div>
-              <v-btn
-                small
-                icon
-                @click="(picker = !picker), (colorShow = !colorShow)"
-                ><v-icon :color="colorShow ? 'success' : ''">{{
-                  !colorShow ? 'mdi-eyedropper-variant' : 'mdi-check'
-                }}</v-icon></v-btn
-              >
-            </div>
-          </template>
         </v-text-field>
-        <v-color-picker
-          dot-size="25"
-          v-if="colorShow && item.field == 'color_hex'"
-          hide-inputs
-          v-model="obj[item.field]"
-          mode="hexa"
-          @update:color="(a) => (obj[item.field] = a.hexa)"
-        ></v-color-picker>
+        <v-text-field
+          class="mr-4"
+          v-model="newItemValue"
+          :label="$t('form.value')"
+          placeholder=""
+          outlined
+          rounded
+          dense
+          @keyup.enter="addItem()"
+        >
+        </v-text-field>
+        <v-btn color="primary" @click="addItem()" rounded>
+          {{ $t('buttons.add') }}
+        </v-btn>
       </div>
+
       <v-divider class="mt-4"></v-divider>
       <div class="d-flex mt-4">
-        <!-- <v-badge dot bordered color="error">
-          <div class="text-subtitle-2">
-            {{ $t('form.requiredFields') }}
-          </div></v-badge
-        > -->
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="validate()" rounded>
           {{ edit ? $t('buttons.edit') : $t('buttons.register') }}
@@ -100,66 +79,14 @@ const LIST_MATRIX = gql`
 `;
 
 const ADD_OBJECT = gql`
-  mutation ADD_OBJECT(
-    $color_hex: String
-    $color_name: String
-    $description: String
-    $img: String
-    $name: String!
-    $part_number: String
-    $parts: Int
-    $supplier: String
-    $unit: String
-    $variable: [DBREF_variable]
-    $matrix: [DBREF_matrix]
-  ) {
-    create_object(
-      input: {
-        color_hex: $color_hex
-        color_name: $color_name
-        description: $description
-        img: $img
-        name: $name
-        part_number: $part_number
-        parts: $parts
-        supplier: $supplier
-        unit: $unit
-        variable: $variable
-        matrix: $matrix
-      }
-    )
+  mutation ADD_OBJECT($content: JSON!) {
+    create_object(input: { content: $content })
   }
 `;
 
 const UPDATE_OBJ = gql`
-  mutation UPDATE_OBJ(
-    $_id: ID!
-    $color_hex: String
-    $color_name: String
-    $description: String
-    $img: String
-    $name: String!
-    $part_number: String
-    $parts: Int
-    $supplier: String
-    $variable: [DBREF_variable]
-    $matrix: [DBREF_matrix]
-  ) {
-    update_object(
-      _id: $_id
-      input: {
-        color_hex: $color_hex
-        color_name: $color_name
-        description: $description
-        img: $img
-        name: $name
-        part_number: $part_number
-        parts: $parts
-        supplier: $supplier
-        variable: $variable
-        matrix: $matrix
-      }
-    )
+  mutation UPDATE_OBJ($_id: ID!, $content: JSON!) {
+    update_object(_id: $_id, input: { content: $content })
   }
 `;
 
@@ -173,11 +100,13 @@ export default {
 
   data() {
     return {
-      isValid: true,
-      colorShow: false,
-      picker: false,
-      autocompleteFields: ['variable', 'matrix'],
+      valid: true,
+      formHasErrors: false,
       obj: {},
+      autocompleteInclude: ['object', 'sketch'],
+      newItem: '',
+      newItemValue: '',
+      new_items: [],
     };
   },
 
@@ -186,15 +115,36 @@ export default {
     get_matrix_list: LIST_MATRIX,
   },
 
+  created() {
+    this.items.forEach((item) => {
+      this.obj[item.field] = item.value;
+    });
+  },
+
+  computed: {
+    updated_items() {
+      return [...this.items, ...this.new_items];
+    },
+  },
   methods: {
     rules() {
       return {
-        required: (value) => !!value ||  this.$t('form.required'),
+        required: (value) => !!value || this.$t('form.required'),
       };
     },
 
-    generateObj(item) {
-      this.obj[item.field] = item.value;
+    dellItem(item) {
+      console.log('dellItem', item);
+      this.new_items.splice(this.items.indexOf(item), 1);
+    },
+    addItem() {
+      // After add the new item, when they are updated, nothing occurs, why?
+      if (this.newItem && this.newItemValue) {
+        this.obj[this.newItem] = this.newItemValue;
+        this.new_items.push({ field: this.newItem, title: this.newItem });
+        this.newItem = '';
+        this.newItemValue = '';
+      }
     },
 
     validate() {
@@ -216,31 +166,18 @@ export default {
         .mutate({
           mutation: ADD_OBJECT,
           variables: {
-            // eslint-disable-next-line no-underscore-dangle
-            color_hex: obj.color_hex,
-            description: obj.description,
-            img: obj.img,
-            name: obj.name,
-            part_number: obj.part_number,
-            parts: parseInt(obj.parts),
-            supplier: obj.supplier,
-            unit: obj.unit,
-            variable: obj.variable,
-            matrix: obj.matrix,
+            content: obj,
           },
         })
 
         .then(() => {
-          // Result
           this.$alertFeedback(this.$t('alerts.updateUserSuccess'), 'success');
           this.$emit('refetch');
           this.$refs.form.reset();
         })
 
         .catch((error) => {
-          // Error
           this.$alertFeedback(this.$t('alerts.updateUserFail'), 'error', error);
-          // We restore the initial user input
         });
     },
 
@@ -250,31 +187,18 @@ export default {
         .mutate({
           mutation: UPDATE_OBJ,
           variables: {
-            // eslint-disable-next-line no-underscore-dangle
             _id: this.id,
-            color_hex: obj.color_hex,
-            color_name: obj.color_name,
-            date: obj.date,
-            description: obj.description,
-            img: obj.img,
-            name: obj.name,
-            part_number: obj.part_number,
-            parts: obj.parts,
-            supplier: obj.supplier,
-            variable: obj.variable,
-            matrix: obj.matrix,
+            content: obj,
           },
         })
 
         .then(() => {
-          // Result
           this.$emit('refetch');
           this.$alertFeedback(this.$t('alerts.updateObjSuccess'), 'success');
           this.$router.back();
         })
 
         .catch((error) => {
-          // Error
           this.isLoading = false;
           this.$alertFeedback(this.$t('alerts.updateObjFail'), 'error', error);
         });
@@ -289,9 +213,6 @@ export default {
 
   .field {
     padding: 1.5rem 0;
-  }
-  ::v-deep .v-text-field__details {
-    // display: none;
   }
 }
 </style>

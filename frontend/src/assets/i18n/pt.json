@@ -113,6 +113,8 @@
     }
   },
   "form": {
+    "key": "Chave",
+    "value": "Valor",
     "color_hex": "Cor (Hexadecimal)",
     "color_name": "Nome da COR",
     "color": "Cor",

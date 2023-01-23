@@ -110,6 +110,8 @@
     }
   },
   "form": {
+    "key": "Key",
+    "value": "Value",
     "color_hex": "Color (Hexadecimal)",
     "color_name": "Color Name",
     "color": "Color",

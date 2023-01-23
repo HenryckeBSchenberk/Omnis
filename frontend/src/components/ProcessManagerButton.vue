@@ -99,22 +99,17 @@ const LIST_PROCESS = gql`
       _id
       name
       object {
-        name
         _id
-        matrix {
-          name
-          _id
+        content
         }
       }
     }
-  }
 `;
 
 const LIST_OBJECT = gql`
   query LIST_OBJECT {
     get_object_list {
       _id
-      name
     }
   }
 `;

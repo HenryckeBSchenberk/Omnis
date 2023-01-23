@@ -13,12 +13,12 @@
             <span class="text-h6 text-capitalize">{{ obj.name }}</span>
             <div class="text-subtitle-2">{{ obj.description }}</div>
             <div class="font-weight-bold d-flex align-center">
-              <div class="text-body-2 mr-1">{{ $t('form.partNumberAb') }}:</div>
-              {{ obj.part_number }}
+              <div class="text-body-2 mr-1">{{ $t('form.name') }}:</div>
+              {{ obj.content.name }}
             </div>
             <div class="font-weight-bold d-flex align-center">
-              <div class="text-body-2 mr-1">color:</div>
-              {{ obj.color_name }}
+              <div class="text-body-2 mr-1">ID:</div>
+              {{ obj._id }}
             </div>
             <!-- <div class="text-body-2">
             {{ $timestampToDate(obj.date) }}
@@ -73,8 +73,8 @@
             hide-default-header
             hide-default-footer
           >
-            <template v-slot:item.field="{ item }">
-              <div class="font-weight-bold">
+            <template v-slot:[`item.field`]="{ item }">
+              <div class="font-weight-bold text-capitalize">
                 {{ item.field }}
               </div>
             </template></v-data-table
@@ -127,28 +127,10 @@ export default {
 
   computed: {
     detailItems() {
-      return [
-        {
-          field: this.$t('form.variable'),
-          value: this.obj.variable?.map((a) => a.name).join(', '),
-        },
-        {
-          field: this.$t('form.color'),
-          value: `${this.obj.color_hex} | ${this.obj.color_name}`,
-        },
-        {
-          field: this.$t('form.supplier'),
-          value: this.obj.supplier,
-        },
-        {
-          field: this.$t('form.parts'),
-          value: `${this.obj.parts} ${this.obj.unit}`,
-        },
-        {
-          field: this.$t('form.date'),
-          value: this.$timestampToDate(this.obj.date),
-        },
-      ];
+      return Object.keys(this.obj.content).map((key) => ({
+        field: key,
+        value: this.obj.content[key],
+      }));
     },
   },
 
