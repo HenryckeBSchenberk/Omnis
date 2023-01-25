@@ -50,7 +50,7 @@
         "order": "Define a ordem de acesso aos slots"
       },
       "objects": {
-        "name": "Nome",
+        "name": "Objeto",
         "title": "Objetos",
         "subtitle": "Criar e editar objetos",
         "add": "Adicionar objeto",
