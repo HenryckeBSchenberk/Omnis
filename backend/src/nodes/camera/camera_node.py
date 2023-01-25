@@ -15,8 +15,8 @@ class CameraNode(BaseNode):
     \t:onSuccess: - Send last frame read.\n
     """
 
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.input_connections = input_connections
         self.camera_id = options["camera"]["_id"]
         self.camera = CameraManager.get_by_id(self.camera_id)

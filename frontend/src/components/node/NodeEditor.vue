@@ -3,6 +3,7 @@
     <span style="display: none">{{ selectedTabIndex }}</span>
     <baklava-editor :plugin="viewPlugin" class="baklava-editor" />
     <Cartesian3D height="10rem" class="cartesian"></Cartesian3D>
+    <!-- <ObjectPicker></ObjectPicker> -->
     <!-- <UseDraggable class="cartesian" :initialValue="{ x: 100, y: 100 }" v-slot="{ x, y }">
     </UseDraggable> -->
     <side-menu class="side-menu"></side-menu>
@@ -31,6 +32,7 @@ import { mapActions, mapState } from 'vuex';
 import StartNode from '@/components/node/nodes/inputs/StartNode';
 import SideMenu from '@/components/node/sideMenu/sideMenu.vue';
 import Cartesian3D from '@/components/node/Cartesian3d.vue';
+// import ObjectPicker from '@/components/node/ObjectPicker.vue';
 
 // Custom Baklava Components
 import CustomContextMenu from '@/components/node/custom/CustomContextMenu.vue';
@@ -53,6 +55,7 @@ export default {
     ActionMenuForNodes,
     SideMenu,
     Cartesian3D,
+    // ObjectPicker,
   },
 
   computed: {

@@ -12,8 +12,8 @@ class OrNode(BaseNode):
     insert_node_description_here
     """
 
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         NodeManager.addNode(self)
 
     #@Observer.fail

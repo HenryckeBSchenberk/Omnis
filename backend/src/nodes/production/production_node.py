@@ -9,8 +9,8 @@ NODE_TYPE = "PRODUCTION"
 
 @for_all_methods(exception(logger))
 class ProductionNode(BaseNode):
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.model = options["model"]["value"]
         self.status = None
         self.production_obj = ProductionOBJ(**options)

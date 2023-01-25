@@ -1,16 +1,10 @@
 from enum import Enum
 from datetime import datetime
-from bson import ObjectId
-# from .manager.process_manager import ProcessManager as process
 
 from .nodes.node_manager import NodeManager
 from .nodes.node_registry import NodeRegistry
 from .nodes.alerts.alert_obj import Alert
 from api import logger, exception, dbo
-
-variables = {
- #   '<color>': "#FFFFFF",
-}
 
 class LoadingMode(Enum):
     STARTUP = "STARTUP"
@@ -142,7 +136,7 @@ def cleanNodeManager(nodeConfigs):
 
 
 @exception(logger)
-def loadConfig(NodeSheet, mode=LoadingMode):
+def loadConfig(NodeSheet, obj=None, mode=LoadingMode):
     numberOfNodesTotal = 0
     numberOfNodesChanged = 0
     numberOfNodesInit = 0
@@ -177,6 +171,7 @@ def loadConfig(NodeSheet, mode=LoadingMode):
                     options,
                     output_connections,
                     input_connections,
+                    obj,
                 )
                 numberOfNodesInit += 1
                 if mode == LoadingMode.RUNNING:

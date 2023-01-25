@@ -19,8 +19,8 @@ class ForloopNode(BaseNode):
         :Fim: - Envia um sinal de fim de execução, reseta o iterator. \n
     """
 
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.iterator = enumerate(options["iterator"]["value"])
         self.backup = options["iterator"]["value"][:]
         self.auto_run = options.get("auto_run", False)

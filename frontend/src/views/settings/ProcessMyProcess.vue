@@ -63,8 +63,8 @@ const LIST_PROCESS = gql`
       }
       updated_at
       object {
-        name
         _id
+        content
       }
     }
   }

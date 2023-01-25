@@ -118,7 +118,7 @@ class Process_Thread(threading.Thread):
 
 @for_all_methods(exception(logger))
 class sample_process():
-    def __init__(self, name, sketch, created_by, created_at, _id=None,  *args, **kwargs) -> None:
+    def __init__(self, name, sketch, created_by, created_at, _id=None, object=None,  *args, **kwargs) -> None:
         self.__process = {}
         self.__pointer = {'status':"Undefined"}
         self._id = ObjectId(_id)
@@ -129,6 +129,7 @@ class sample_process():
         self.created_at = created_at
         self.loaded_id = None
         self.sketch = sketch
+        self.object = object
         self.st = NodeManager.start
         self.args = args
         self.kwargs = kwargs

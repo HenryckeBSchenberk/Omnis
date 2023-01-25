@@ -38,3 +38,10 @@ class TestOption(unittest.TestCase):
         payload = "${test_object.name"
         with self.assertRaises(ValueError):
             self.option.parser(payload)
+    
+    def test_DefaultObject(self):
+        obj = Object(**{"name": "another_test", "type": "object_test_check"})
+        option = Option({"type": "${type}", "color": "red"}, obj)
+        self.assertEqual(option.type, "object_test_check")
+        self.assertEqual(option.color, "red")
+        Manager.remove_by_id(obj._id)

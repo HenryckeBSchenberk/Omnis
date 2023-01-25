@@ -15,8 +15,8 @@ class ColorSpaceNode(BaseNode):
     More info about color conversion codes can be found here:    https://docs.opencv.org/4.5.5/d8/d01/group__imgproc__color__conversions.html
     """
 
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.input_connections = input_connections
         self.CSO = options["colorSpaceOrigin"]
         self.CSC = options["colorSpaceConvert"]

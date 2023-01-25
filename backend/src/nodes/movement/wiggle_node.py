@@ -19,8 +19,8 @@ velocity['value']
 board
 """
 class WiggleNode(BaseNode):
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         # logger.info(options)
         self.axisList = options["axislist"]
         self.mode = options["mode"]

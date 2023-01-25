@@ -16,10 +16,11 @@ class Option:
         def set(self, value):
             self.obj[self.key] = value
 
-    def __init__(self, descritor):
+    def __init__(self, descritor, Object=None):
         self.__dict__['properties'] = {}                #! Avoid recursion
+        self.__dict__['obj']= Object
         self.update(descritor)
-        
+
     def update(self, descritor):
         self.properties.update(
             {
@@ -53,19 +54,20 @@ class Option:
         Parser a payload
 
         """
-        obj = None
-        regex_pattern = r"\$\{(?P<name>[\w]+)\.(?P<prop>[\w]+)\}"
+        obj = self.obj
+        regex_pattern = r"\$\{(?P<name>[\w]+)\.?(?P<prop>[\w]+)?\}"
         regex = re.compile(regex_pattern)
         if isinstance(string, str) and string.startswith('${') and string.endswith('}'):
             match = regex.search(string)
             if match:
                 try:
-                    obj = Manager.get_by_name(match.group('name')) or Object(**Manager.get_item(query={'content.name': match.group('name')}, user=Manager.user))
-                    if obj:
-                        return getattr(obj, match.group('prop')), obj, match.group('prop')
+                    if match.group('prop'):
+                        obj = Manager.get_by_name(match.group('name')) or Object(**Manager.get_item(query={'content.name': match.group('name')}, user=Manager.user))
                 except TypeError:
                     # Manager.get_item() return None, ** will fail.
                     pass
+                if obj:
+                    return getattr(obj, match.group('prop') or match.group('name')), obj, match.group('prop') or match.group('name')
             return None, None, None
         raise ValueError("Invalid string format, it should be '${0}', but it was '{1}'".format(
             "{object_name.prop}", string))
