@@ -3,6 +3,7 @@
     <v-form ref="form" v-model="valid" lazy-validation>
       <div v-for="item in updated_items" :key="item.field">
         <v-text-field
+          class="text-lowercase"
           v-model="obj[item.field]"
           @click:append="dellItem(item)"
           :append-icon="item.field == 'name' ? '' : 'mdi-trash-can'"
@@ -20,7 +21,7 @@
       <v-divider class="mt-4"></v-divider>
       <div class="d-flex mt-4">
         <v-text-field
-          class="mr-4"
+          class="mr-4 text-lowercase"
           v-model="newItem"
           :label="$t('form.key')"
           placeholder=""
@@ -31,7 +32,7 @@
         >
         </v-text-field>
         <v-text-field
-          class="mr-4"
+          class="mr-4 text-lowercase"
           v-model="newItemValue"
           :label="$t('form.value')"
           placeholder=""
@@ -134,12 +135,17 @@ export default {
     },
 
     dellItem(item) {
-      console.log('dellItem', item);
-      this.new_items.splice(this.items.indexOf(item), 1);
+      this.new_items = this.new_items.filter(inside => inside !== item);
+      this.items = this.items.filter(inside => inside !== item);
+      delete this.obj[item.field];
+      // Override props are not de best, but using and 'delist' and '!delist.includes(item)'
+      // will prevent the same value from being added again, after deleted
     },
     addItem() {
       // After add the new item, when they are updated, nothing occurs, why?
       if (this.newItem && this.newItemValue) {
+        this.newItem = this.newItem.toLowerCase();
+        this.newItemValue = this.newItemValue.toLowerCase();
         this.obj[this.newItem] = this.newItemValue;
         this.new_items.push({ field: this.newItem, title: this.newItem });
         this.newItem = '';

@@ -16,7 +16,7 @@
           <v-card-text max-height="50vh">
             <v-card
               link
-              v-for="(item, index) in get_process_list"
+              v-for="(item, index) in get_process_list" :v-on="setObjectID(item.object._id)"
               :key="index"
               class="mx-auto"
               @click="selectedProcess(item._id)"
@@ -25,7 +25,7 @@
               <template v-slot:activator="{ on }">
                 <!-- <div class="viewer"></div> -->
                 <div class="pl-4 pr-4 my-4" v-on='on'>
-                  <v-card-text class="text-center text-subtitle text-capitalize font-weight-bold">{{ item.name }}</v-card-text>
+                  <v-card-text class="text-center text-subtitle text-capitalize font-weight-bold">{{ item.name}}</v-card-text>
                   <!-- <div class="text-subtitle-2">{{ item.description }}</div> -->
                 </div>
               </template>
@@ -68,6 +68,7 @@
 <script>
 import gql from 'graphql-tag';
 import MatrixViewer from './node/nodes/matrix/MatrixViewer.vue';
+import { mapActions } from 'vuex';
 
 const START = gql`
   mutation START {
@@ -178,6 +179,7 @@ export default {
   },
 
   methods: {
+    ...mapActions('object', ['setObjectID']),
     async selectedProcess(_id) {
       console.log('select', _id);
       await this.$apollo

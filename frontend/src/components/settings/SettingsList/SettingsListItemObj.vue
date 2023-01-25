@@ -28,6 +28,13 @@
       </div>
       <v-spacer></v-spacer>
       <div class="d-flex">
+        <v-btn
+          class="mr-5"
+          icon
+          @click="setObjectID(obj._id)"
+          :color="object_id == obj._id ? 'success' : 'gray'"
+          ><v-icon>mdi-cable-data</v-icon></v-btn
+        >
         <v-btn class="mr-5" icon @click="show = !show"
           ><v-icon>{{
             show ? 'mdi-chevron-up' : 'mdi-chevron-down'
@@ -88,7 +95,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import DialogConfirmation from '@/components/settings/DialogConfirmation.vue';
 
 export default {
@@ -126,6 +133,7 @@ export default {
   },
 
   computed: {
+    ...mapState('object', ['object_id']),
     detailItems() {
       return Object.keys(this.obj.content).map((key) => ({
         field: key,
@@ -138,7 +146,7 @@ export default {
     ...mapActions({
       updateUser: 'auth/updateUser',
     }),
-
+    ...mapActions('object', ['setObjectID']),
     getInitials() {
       return this.user?.name?.charAt(0);
     },

@@ -109,8 +109,8 @@ import SketchExplorer from '@/components/node/SketchExplorer.vue';
 import SerialMonitor from '@/components/SerialMonitor.vue';
 
 const START = gql`
-  mutation START($id: ID!) {
-    start_process(_id: $id)
+  mutation START($id: ID!, $object_id: ID) {
+    start_process(_id: $id, object_id:$object_id)
   }
 `;
 
@@ -175,6 +175,7 @@ export default {
       selectedTab: (state) => state.selectedTab,
       editor: (state) => state.editor,
     }),
+    ...mapState('object', ['object_id']),
 
     ...mapGetters('node', [
       'selectedTabName',
@@ -253,6 +254,7 @@ export default {
           variables: {
             // eslint-disable-next-line no-underscore-dangle
             id: this.selectedTab._id,
+            object_id: this.object_id,
           },
         })
 
