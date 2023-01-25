@@ -10,7 +10,6 @@ type object {
 }
 
 input reg_object {
-    _id: ID!
     content: JSON!
 }
 
@@ -21,7 +20,7 @@ extend type Query {
 
 extend type Mutation {
     create_object(input: reg_object): ID
-    update_object(input: reg_object): ID
+    update_object(_id: ID!, input: reg_object): ID
     delete_object(_id: ID!): ID
     duplicate_object(_id: ID!): ID
 }
