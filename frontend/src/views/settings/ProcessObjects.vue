@@ -44,23 +44,7 @@ const LIST_OBJ = gql`
   query LIST_OBJ {
     get_object_list {
       _id
-      name
-      description
-      part_number
-      parts
-      supplier
-      color_name
-      color_hex
-      date
-      img
-      matrix {
-        name
-        _id
-      }
-      variable {
-        name
-        _id
-      }
+      content
     }
   }
 `;
@@ -83,71 +67,20 @@ export default {
       objToEdit: {},
       editDialog: false,
       fieldsToIgnore: ['__typename', '_id', 'img'],
-      requireFields: ['name'],
+      requireFields: ['content'],
     };
   },
 
   computed: {
     model() {
       const list = this.objToEdit;
+      console.log('model', list);
       if (list) {
-        // console.log('lista', list);
         const objList = [
           {
             field: 'name',
-            value: list.name,
+            value: list.content?.name,
             title: 'name',
-            required: true,
-          },
-          {
-            field: 'description',
-            value: list.description,
-            title: 'description',
-          },
-          {
-            field: 'part_number',
-            value: list.part_number,
-            title: 'part_number',
-          },
-          {
-            field: 'supplier',
-            value: list.supplier,
-            title: 'supplier',
-          },
-          {
-            field: 'parts',
-            value: list.parts,
-            title: 'parts',
-          },
-          {
-            field: 'unit',
-            value: list.unit,
-            title: 'unit',
-          },
-          {
-            field: 'color_hex',
-            value: list.color_hex,
-            title: 'color',
-          },
-          {
-            field: 'color_name',
-            value: list.color_name,
-            title: 'color',
-          },
-          {
-            field: 'variable',
-            value: list.variable,
-            title: 'color',
-          },
-          {
-            field: 'matrix',
-            value: list.matrix,
-            title: 'matrix',
-          },
-          {
-            field: 'img',
-            value: list.img,
-            title: 'img',
           },
         ];
         return objList;
@@ -168,8 +101,7 @@ export default {
 
     edit(obj) {
       const newObject = [];
-
-      Object.entries(obj).forEach((a) => {
+      Object.entries(obj.content).forEach((a) => {
         if (!this.fieldsToIgnore.includes(a[0])) {
           console.log(a[0], a[1]);
           newObject.push({

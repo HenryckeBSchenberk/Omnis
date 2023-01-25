@@ -23,7 +23,11 @@ dotenv.config({
 
 module.exports = {
   devServer: {
-    // host: '192.168.18.8',
+    watchOptions: {
+      ignored: /node_modules/,
+      aggregateTimeout: 300,
+      poll: 1000,
+    },
   },
   pwa: {
     name: 'Parallax',

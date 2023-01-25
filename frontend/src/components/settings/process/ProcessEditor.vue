@@ -25,16 +25,13 @@
           v-if="autocompleteInclude.includes(item.field)"
           :label="$t('form.' + item.field) + (item.required ? '*' : '')"
           rounded
-          :multiple="item.field != 'sketch'"
           outlined
           v-model="obj[item.field]"
           :rules="item.required ? [rules().required] : [true]"
           :items="item.field == 'object' ? get_object_list : get_sketch_list"
-          item-text="name"
+          :item-text="item.field == 'object' ? 'content.name': 'name'"
           item-value="_id"
           return-object
-          :chips="item.field != 'sketch'"
-          :deletable-chips="item.field != 'sketch'"
         ></v-autocomplete>
       </div>
 
@@ -65,7 +62,7 @@ const LIST_OBJECT = gql`
   query LIST_OBJECT {
     get_object_list {
       _id
-      name
+      content
     }
   }
 `;
@@ -74,7 +71,7 @@ const LIST_MATRIX = gql`
   query LIST_MATRIX {
     get_matrix_list {
       _id
-      name
+      content
     }
   }
 `;
@@ -85,7 +82,7 @@ const ADD_PROCESS = gql`
     $description: String
     $img: String
     $name: String
-    $object: [DBREF_object]
+    $object: DBREF_object
   ) {
     create_process(
       input: {
@@ -106,7 +103,7 @@ const UPDATE_PROCESS = gql`
     $img: String
     $name: String
     $sketch: DBREF_sketch
-    $object: [DBREF_object]
+    $object: DBREF_object
   ) {
     update_process(
       _id: $_id

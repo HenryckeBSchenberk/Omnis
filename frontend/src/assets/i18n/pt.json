@@ -50,7 +50,7 @@
         "order": "Define a ordem de acesso aos slots"
       },
       "objects": {
-        "name": "Nome",
+        "name": "Objeto",
         "title": "Objetos",
         "subtitle": "Criar e editar objetos",
         "add": "Adicionar objeto",
@@ -113,6 +113,8 @@
     }
   },
   "form": {
+    "key": "Chave",
+    "value": "Valor",
     "color_hex": "Cor (Hexadecimal)",
     "color_name": "Nome da COR",
     "color": "Cor",
