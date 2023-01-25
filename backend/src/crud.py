@@ -92,7 +92,7 @@ class CRUD:
         return _id
 
     def get_list(self, *args, **kwargs):
-        return dbo.find_many(kwargs.get("collection", self.collection), kwargs.get("filter", {}), ref=False)
+        return dbo.find_many(kwargs.get("collection", self.collection), kwargs.get("filter", {}), ref=True)
 
     def get_item(self, *args, **kwargs):
         return dbo.find_one(

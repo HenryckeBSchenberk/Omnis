@@ -41,4 +41,11 @@ class Object_Manager(CRUD):
                 return obj
         return None
 
+    def update(self, *args, **kwargs):
+        _id =  super().update(*args, **kwargs)
+        obj = self.get_by_id(_id)
+        if obj:
+            obj.load(**kwargs.get('input', {}).get('content', {}))
+        return _id
+
 Manager = Object_Manager()
