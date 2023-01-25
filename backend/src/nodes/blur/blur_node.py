@@ -17,8 +17,8 @@ class BlurNode(BaseNode):
     Node to smoothing an image
     """
 
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.input_connections = input_connections
         self.type = options["blur_type"]
         self.k_size = options["blur_intensity"]

@@ -12,7 +12,7 @@ type process implements metadata {
   created_by: user!
   edited_by: user
   updated_at: timestamptz
-  object: [object]
+  object: object
 }
 
 input reg_process {
@@ -20,7 +20,7 @@ input reg_process {
   name: String
   description: String 
   sketch: DBREF_sketch
-  object: [DBREF_object]
+  object: DBREF_object
 }
 
 extend type Query {
@@ -33,7 +33,7 @@ extend type Mutation  {
   update_process(_id: ID!, input: reg_process): ID
   delete_process(_id: ID!): ID
   duplicate_process(_id: ID!): ID
-  start_process(_id: ID): Boolean
+  start_process(_id: ID, object_id: ID): Boolean
   stop_process:  Boolean
   pause_process: Boolean
   resume_process: Boolean

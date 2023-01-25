@@ -66,12 +66,12 @@ class BaseNode(Observer):
 
     """
 
-    def __init__(self, name, type_, id, options, output_connections) -> None:
+    def __init__(self, name, type_, id, options, output_connections, obj=None) -> None:
         self.loop = asyncio.get_event_loop()
         self.name = name
         self.type = type_
         self._id = id
-        self.options = Option(options)
+        self.options = Option(options, obj)
         self.output_connections = {item._from.name: item for item in output_connections }
         self.running = True
         self.stop_event = Event()

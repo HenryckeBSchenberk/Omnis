@@ -33,8 +33,8 @@ class HsvNode(BaseNode):
         "Better HSV" -> returns the same at above but with an MorphologyEx applied to remove noise pixels.
     """
 
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.update_options(options)
         self.auto_run = options.get("auto_run", False)
         self.image = CameraManager.read()

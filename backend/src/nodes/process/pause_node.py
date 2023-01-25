@@ -4,11 +4,11 @@ from api import logger
 NODE_TYPE = "PauseNode"
 
 class PauseNode(ProcessNode):
-    def __init__(self, name, id, options, output_connections, input_connections):
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
         self.options = options
         self.options["action"] = "pause"
         self.options["auto_run"] = False
-        super().__init__(name, id, options, output_connections, input_connections)
+        super().__init__(name, id, options, output_connections, input_connections, default_object)
 
     async def execute(self, message):
         logger.info(f'[{self.name}] || {message}')

@@ -3,6 +3,7 @@ from src.nodes.node_manager import NodeManager
 from src.crud import SSPR
 from src.loader import loadConfig, LoadingMode
 from src.nodes.process.process import sample_process as Process
+from src.nodes.object.object import Manager as ObjectManager, Object
 from src.end_points import Process as WebProcess
 from api import logger, dbo, auth
 from api.mutations import mutation
@@ -33,7 +34,7 @@ class ProcessObjectManager(SSPR, BaseManager):
         asyncio.run(self.websocket.broadcast_on_change(self.status, self.status))
 
     def start(self, **kwargs):
-        self.load(kwargs.get('_id'))
+        self.load(kwargs.get('_id') , kwargs.get('object_id'))
         self.process.start()
 
     def stop(self,  **kwargs):
@@ -79,10 +80,14 @@ class ProcessObjectManager(SSPR, BaseManager):
         return getattr(self.__status[0], 'status', {'status': 'UNKNOWN'})
     
 
-    def load(self, _id=False):
+    def load(self, _id=False, object_id=False):
         self.unload()
-        full_sketch = dbo.find_one('sketch', self.process.sketch.id if not _id else _id)
-        loaded = loadConfig(full_sketch['content'])
+        full_sketch = dbo.find_one('sketch', _id or self.process.sketch.id)
+
+        object_id = object_id or self.process.object.id
+        obj = ObjectManager.get_by_id(object_id) or Object(**ObjectManager.get_item(_id=object_id, user=ObjectManager.user))
+        
+        loaded = loadConfig(full_sketch['content'], obj)
         if loaded:
             self.loaded_id = self.process.sketch.id if not _id else _id
         else:

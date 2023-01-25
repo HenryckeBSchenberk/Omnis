@@ -18,8 +18,8 @@ class IdentifyNode(BaseNode):
         "onSuccess" -> returns a list of dimensional countour data.
     """
 
-    def __init__(self, name, id, options, output_connections, input_connections):
-        super().__init__(name, NODE_TYPE, id, options, output_connections)
+    def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
+        super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.input_connections = input_connections
         self.filters = options["filters"]
         # self.propertie = options["propertie"]
