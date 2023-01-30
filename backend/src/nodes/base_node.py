@@ -145,7 +145,7 @@ class BaseNode(Observer):
                 logger.error(f"[{self.name}] || Can't find node {target._to.nodeId}")
                 raise IndexError(f"Can't find node {target._to.nodeId}")
         else:
-            logger.error(
+            logger.warning(
                 f"Node {self.name} has no output connection for trigger {trigger}"
             )
 

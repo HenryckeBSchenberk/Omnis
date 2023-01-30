@@ -25,7 +25,8 @@ def getDb():
     global _db
     if _db is None:
         _db = MongoOBJ(environ.get("DB_NAME", "Omnis"), url)
-        custom_handler(logger, "mongo", "json",  _db, levels[lvl]) #! Works?
+        custom_handler(logger, "stream", "console", None, levels[lvl])  # Console colored logger
+        custom_handler(logger, "mongo", "json",  _db, levels[lvl])      # MongoDB logger
     return _db
 
 

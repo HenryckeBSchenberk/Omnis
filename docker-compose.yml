@@ -25,6 +25,7 @@ services:
     links:
       - marlin_0
       - mongo
+      - redis
     profiles:
       - default
       - backend
@@ -73,6 +74,18 @@ services:
       - backend
     networks:
         - bind-network
+  
+  redis:
+    container_name: cache
+    image: redis:latest
+    restart: always
+    privileged: true
+    profiles:
+      - default
+      - redis
+      - backend
+    networks:
+      - bind-network
   
 networks: 
   bind-network:

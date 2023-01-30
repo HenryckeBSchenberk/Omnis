@@ -1,156 +1,161 @@
 import unittest
-from bson import ObjectId as new_id
 from src.nodes.object.object import Object, Manager
-from src.utility.crud.user import User
+from src.utility.crud.user import User, DBRef, ObjectId
+
+def _object_pattern_test(self, example):
+
+    # Check for object pattern
+    self.assertIsInstance(self.item, Object)
+    self.assertIsInstance(self.item.created_by, DBRef)
+    self.assertIsInstance(self.item._id, ObjectId)
+
+    # Check_for_cache and LocalStore on Manager
+    self.assertEqual(self.item.export(), Manager.crud.cache_manager.get_document(example["_id"]))
+    self.assertEqual(self.item, Manager.store.get(example["_id"], 'Fail to get item from store'))
 
 
-class BasicOperations(unittest.TestCase):
+class ObjectLocal(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.user = User('object_test', 'local', 'developer', '')
+
     def setUp(self):
-        self.object = Object(**{"name": "object_name", "type": "object_test"})
+        Manager.crud.cache_manager.clear_cache()
 
     def tearDown(self):
-        Manager.remove_by_id(self.object._id)
-        self.assertFalse(Manager.store)
+        Manager.delete(_id=self.item._id, user=self.user)
+        del self.item
+    
+    def test_get_local(self):
+        EXAMPLE = {"content":{"name": "DB+CACHE+LOCAL", "type": "object_test"}}
 
-    def test_AccessAsAttribute(self):
-        self.assertEqual(self.object.name, "object_name")
-        self.assertEqual(self.object.type, "object_test")
+        # Create an objecto on main dbo, cache and localy
+        Manager.create(input=EXAMPLE, user=self.user)
 
-    def test_AccessAsDict(self):
-        self.assertEqual(self.object["name"], "object_name")
-        self.assertEqual(self.object["type"], "object_test")
+        # Assert that the object is on cache and localy
+        self.assertEqual(Manager.crud.cache_manager.get_document(EXAMPLE["_id"]), EXAMPLE)
+        self.assertIsInstance(Manager.store.get(EXAMPLE["_id"], None), Object)
 
-    def test_SetAsAttribute(self):
-        self.object.name = "new_name"
-        self.assertEqual(self.object.name, "new_name")
+        # Call get_item and let it resolve the object
+        self.item = Manager.get_item(_id=EXAMPLE["_id"], user=self.user)
 
-    def test_SetAsDict(self):
-        self.object["name"] = "new_name"
-        self.assertEqual(self.object["name"], "new_name")
+        _object_pattern_test(self, EXAMPLE)
 
+        #Check if the object is the same created on main dbo
+        self.assertEqual(self.item.export(), EXAMPLE)
+    
+    def test_update_local(self):
+        EXAMPLE = {"content":{"name": "DB+CACHE+LOCAL", "type": "INITIAL_VALUE"}}
+        UPDATED_EXAMPLE = {"content":{"name": "DB+CACHE+LOCAL", "type": "UPDATED_VALUE"}}
 
-class UseCases(unittest.TestCase):
+        Manager.create(input=EXAMPLE, user=self.user)
+        Manager.update(_id=EXAMPLE["_id"], input=UPDATED_EXAMPLE, user=self.user)
+
+        # Assert that the object is on cache and localy
+        self.assertTrue(Manager.crud.cache_manager.get_document(EXAMPLE["_id"]))
+        self.assertIsInstance(Manager.store.get(EXAMPLE["_id"], None), Object)
+
+        # Call get_item and let it resolve the object
+        self.item = Manager.get_item(_id=EXAMPLE["_id"], user=self.user)
+
+        _object_pattern_test(self, EXAMPLE)
+
+        #Check if the object was updated
+        self.assertEqual(self.item.type, UPDATED_EXAMPLE['content']['type'])
+
+class ObjetUncached(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.user = User('object_test', 'uncached', 'developer', '')
+
     def setUp(self):
-        self.A_id = new_id()
-        self.B_id = new_id()
-
-        self.A = Object(self.A_id, **{"name": "object_A"})
-        self.B = Object(self.B_id, **{"name": "object_B", "parent": self.A})
-
-        self.options = {
-            "A": {
-                "name": {
-                    "type": "object",
-                    "_id": self.A_id,
-                    "value": "name"
-                },
-            },
-            "B": {
-                "name": {
-                    "type": "object",
-                    "_id": self.B_id,
-                    "value": "name"
-                },
-                "parent_id": {
-                    "type": "object",
-                    "_id": self.B_id,
-                    "value": "parent._id"
-                },
-            }
-        }
+        Manager.crud.cache_manager.clear_cache()
 
     def tearDown(self):
-        Manager.remove_by_id(self.A_id)
-        Manager.remove_by_id(self.B_id)
-        self.assertFalse(Manager.store)
+        Manager.delete(_id=self.item._id, user=self.user)
+        del self.item
+    
+    def test_get_uncached(self):
+        
+        EXAMPLE = {"content":{"name": "only_db", "type": "object_test"}}
+        # Create an objecto on main dbo, whiout add localy or to cache
+        Manager.crud.create(input=EXAMPLE, user=self.user, cache=False) 
 
-    def test_AutoSubscribeOnManager(self):
-        self.assertTrue(Manager.get_by_id(self.A_id) is self.A)
-        self.assertTrue(Manager.get_by_id(self.B_id) is self.B)
+        # Assert that the object is not on cache or localy
+        self.assertEqual(Manager.crud.cache_manager.get_document(EXAMPLE["_id"]), None)
+        self.assertEqual(Manager.store.get(EXAMPLE["_id"], None), None)
 
-    def test_IntegrityBetweenInstances(self):
-        object1 = Object(
-            self.A_id, **{"name": "object_name1", "type": "object_test"}
-        )
-        self.assertEqual(object1.name, "object_name1")
+        # Call get_item and let it resolve the object
+        self.item = Manager.get_item(_id=EXAMPLE["_id"], user=self.user)
 
-        object2 = Object(
-            self.A_id, **{"name": "object_name2", "type": "object_test"}
-        )
-        self.assertTrue(object1.name is object2.name)
+        _object_pattern_test(self, EXAMPLE)
 
-        new_name = "SampleText"
-        object1.name = new_name
-        self.assertTrue(object1.name is object2.name is new_name)
+        #Check if the object is the same created on main dbo
+        self.assertEqual(self.item.export(), EXAMPLE)
+    
+    def test_update_uncached(self):
+        EXAMPLE = {"content":{"name": "only_db", "type": "INITIAL_VALUE"}}
+        UPDATED_EXAMPLE = {"content":{"name": "only_db", "type": "UPDATED_VALUE"}}
 
+        Manager.crud.create(input=EXAMPLE, user=self.user, cache=False)
+        Manager.crud.update(_id=EXAMPLE["_id"], input=UPDATED_EXAMPLE, user=self.user, cache=False)
 
+        # Assert that the object is not on cache or localy
+        self.assertEqual(Manager.crud.cache_manager.get_document(EXAMPLE["_id"]), None)
+        self.assertEqual(Manager.store.get(EXAMPLE["_id"], None), None)
 
-class CRUD_Object(unittest.TestCase):
+        # Call get_item and let it resolve the object
+        self.item = Manager.get_item(_id=EXAMPLE["_id"], user=self.user)
+
+        _object_pattern_test(self, EXAMPLE)
+
+        #Check if the object was updated
+        self.assertEqual(self.item.type, UPDATED_EXAMPLE['content']['type'])
+
+class ObjectCached(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.user = User('object_test', 'cached', 'developer', '')
+
     def setUp(self):
-        self.object = Object(**{"name": "object_name", "type": "object_test"})
-        self.object_id = self.object._id
-        self.user = User('omnis', 'process', 'developer', '')
+        Manager.crud.cache_manager.clear_cache()
 
     def tearDown(self):
-        Manager.remove_by_id(self.object_id)
-        self.assertFalse(Manager.store)
+        Manager.delete(_id=self.item._id, user=self.user)
+        del self.item
+    
+    def test_update_cached(self):
+        EXAMPLE = {"content":{"name": "DB+CACHE", "type": "INITIAL_VALUE"}}
+        UPDATED_EXAMPLE = {"content":{"name": "DB+CACHE", "type": "UPDATED_VALUE"}}
 
-    def test_Export(self):
-        self.assertEqual(self.object.export(), {
-                         '_id': self.object_id, 'content': {'name': 'object_name', 'type': 'object_test'}})
+        Manager.crud.create(input=EXAMPLE, user=self.user, cache=True)
+        Manager.crud.update(_id=EXAMPLE["_id"], input=UPDATED_EXAMPLE, user=self.user, cache=True)
 
-    def test_Load(self):
-        self.object.load(**{"name": "new_name", "type": "new_type"})
-        self.assertEqual(self.object.export(), {
-                         '_id': self.object_id, 'content': {'name': 'new_name', 'type': 'new_type'}})
+        # Assert that the object is on cache but not localy
+        self.assertTrue(Manager.crud.cache_manager.get_document(EXAMPLE["_id"]))
+        self.assertEqual(Manager.store.get(EXAMPLE["_id"], None), None)
+        
+        # Call get_item and let it resolve the object
+        self.item = Manager.get_item(_id=EXAMPLE["_id"], user=self.user)
 
-    def test_CRUD(self):
-        exported = self.object.export()
-        create = Manager.create(
-            input=exported, _id=self.object_id, user=self.user)
-        get = Manager.get_item(_id=create, user=self.user)
-        self.assertEqual(exported, get)
+        _object_pattern_test(self, EXAMPLE)
 
-        duplicate_id = Manager.duplicate(_id=self.object_id, user=self.user)
-        get_duplicate = Manager.get_item(
-            _id=duplicate_id, user=self.user)
+        #Check if the object was updated
+        self.assertEqual(self.item.type, UPDATED_EXAMPLE['content']['type'])
+    
+    def test_get_cached(self):
+        EXAMPLE = {"content":{"name": "DB+CACHE", "type": "object_test"}}
+        # Create an objecto on main dbo and cache, whiout add localy
+        Manager.crud.create(input=EXAMPLE, user=self.user, cache=True)
+        
+        # Assert that the object is on cache but not localy
+        self.assertEqual(Manager.crud.cache_manager.get_document(EXAMPLE["_id"]), EXAMPLE)
+        self.assertEqual(Manager.store.get(EXAMPLE["_id"], None), None)
 
-        duplicated_object = Object(**get_duplicate)
+        # Call get_item and let it resolve the object
+        self.item = Manager.get_item(_id=EXAMPLE["_id"], user=self.user)
 
-        self.assertEqual(duplicated_object['name'], self.object.name)
-        self.assertTrue(duplicated_object['_id'] != self.object_id)
-
-        Manager.remove_by_id(duplicate_id)
-
-        updated_id = Manager.update(
-            _id=self.object_id,
-            input={
-                "content": {
-                    "name": "new_name",
-                    "type": "new_type"
-                }
-            },
-            user=self.user
-        )
-        get_updated = Manager.get_item(
-            _id=updated_id,
-            user=self.user
-        )
-        self.assertEqual(
-            get_updated["content"],
-            {"name": "new_name", "type": "new_type"}
-        )
-
-        delete_original_id = Manager.delete(_id=self.object_id, user=self.user)
-        delete_duplicate_id = Manager.delete(_id=duplicate_id, user=self.user)
-
-        deleted_original = Manager.get_item(
-            _id=delete_original_id,
-            user=self.user
-        )
-        deleted_duplicate = Manager.get_item(
-            _id=delete_duplicate_id,
-            user=self.user
-        )
-
-        self.assertTrue(deleted_duplicate is deleted_original is None)
+        _object_pattern_test(self, EXAMPLE)
+        
+        #Check if the object is the same created on main dbo
+        self.assertEqual(self.item.export(), EXAMPLE)

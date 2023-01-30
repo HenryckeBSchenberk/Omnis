@@ -1,14 +1,16 @@
 import unittest
 from src.nodes.option import Option
 from src.nodes.object.object import Object, Manager
+from src.utility.crud.user import User
 
 class TestOption(unittest.TestCase):
     def setUp(self):
+        self.user = User('omnis', 'process', 'developer', '')
         self.object = Object(**{"name": "test_object", "type": "object_test"})
         self.option = Option({"type": "${test_object.type}", "color": "red"})
     
     def tearDown(self):
-        Manager.remove_by_id(self.object._id)
+        Manager.delete(_id=self.object._id, user=self.user)
     
     def test_AccessAsAttribute(self):
         self.assertEqual(self.option.type, "object_test")
@@ -44,4 +46,4 @@ class TestOption(unittest.TestCase):
         option = Option({"type": "${type}", "color": "red"}, obj)
         self.assertEqual(option.type, "object_test_check")
         self.assertEqual(option.color, "red")
-        Manager.remove_by_id(obj._id)
+        Manager.delete(_id=obj._id, user=self.user)

@@ -4,12 +4,47 @@ from api.queries import query
 from bson import ObjectId
 from datetime import datetime
 from src.utility.crud.user import User
+from src.cache import CacheManager
 
+def cache_sync_with_kwargs(cache_manager_func_name):
+    def decorator(func):
+        def wrapper(self, *args, **kwargs):
+            result = func(self, *args, **kwargs)
+            if kwargs.pop('cache', True):
+                if hasattr(self, 'cache_manager') and callable(getattr(self.cache_manager, cache_manager_func_name)):
+                    getattr(self.cache_manager, cache_manager_func_name)(kwargs.get('input', {}), kwargs.get('_id'))
+            return result
+        return wrapper
+    return decorator
+
+def cache_sync_with_id(cache_manager_func_name):
+    def decorator(func):
+        def wrapper(self, *args, **kwargs):
+            if kwargs.pop('cache', True):
+                if hasattr(self, 'cache_manager') and callable(getattr(self.cache_manager, cache_manager_func_name)):
+                    result = getattr(self.cache_manager, cache_manager_func_name)(kwargs.get('_id'))
+                    if cache_manager_func_name != 'remove_document':
+                        if result is not None:
+                            return result
+                        logger.warning(f"[{kwargs.get('_id')}] document is not cached yet, fetching from database...")
+                else:
+                    logger.warning(f"Cache manager not found for {self.collection} or {cache_manager_func_name} is not a callable.")
+            result = func(self, *args, **kwargs)
+            if cache_manager_func_name == 'get_document':
+                if result is not None:
+                    logger.warning(f"Adding document to cache: {kwargs.get('_id')}")
+                    self.cache_manager.add_document(result, kwargs.get('_id'))
+                else:
+                    raise KeyError(f"Document not found: {kwargs.get('_id')}")
+            return result
+        return wrapper
+    return decorator
 
 class CRUD:
     def __init__(self, collection, auth_level):
         self.collection = collection
         self.auth_level = auth_level
+        self.cache_manager = CacheManager(collection)
         if auth_level is None: 
             self.auth_level = 'developer'
             logger.warning(f"Auth level not set for {collection}_CRUD, defaulting to {self.auth_level}")
@@ -48,7 +83,9 @@ class CRUD:
         )
         query.set_field(f"get_{self.collection}_item", self.get_item)
 
+    @cache_sync_with_kwargs('add_document')
     def create(self, *args, **kwargs):
+        logger.debug(f"Creating [{kwargs.get('_id')}] in database.")
         _id = ObjectId(kwargs.get("_id"))
         kwargs["input"].update(
             {
@@ -62,7 +99,9 @@ class CRUD:
         )
         return _id
 
+    @cache_sync_with_kwargs('update_cache')
     def update(self, *args, **kwargs):
+        logger.debug(f"Updating [{kwargs.get('_id')}] in database.")
         _id = ObjectId(kwargs.get("_id"))
         kwargs.get("input", {"input":{}}).update ({
             "edited_by": kwargs["user"].dbref,
@@ -77,6 +116,7 @@ class CRUD:
         return _id
 
     def duplicate(self, *args, **kwargs):
+        logger.debug(f"Duplicating [{kwargs.get('_id')}] from database.")
         item = self.get_item(*args, **kwargs)
         item.pop("_id")
         kwargs.pop("_id")
@@ -86,15 +126,21 @@ class CRUD:
         self.update(*args, **kwargs, _id=new_id) #???
         return new_id
 
+    @cache_sync_with_id('remove_document')
     def delete(self, *args, **kwargs):
+        logger.debug(f"Deleting [{kwargs.get('_id')}] from database.")
         _id = ObjectId(kwargs.get("_id"))
         dbo.delete_one(kwargs.get("collection", self.collection), {"_id": _id})
-        return _id
 
+
+    # @cache_sync_with_id('get_all_documents') #How resolve Refs?
     def get_list(self, *args, **kwargs):
-        return dbo.find_many(kwargs.get("collection", self.collection), kwargs.get("filter", {}), ref=True)
+        logger.debug(f"Fetching [{self.collection}] from database.")
+        return dbo.find_many(kwargs.get("collection", self.collection), kwargs.get("filter", {}), ref=kwargs.get("ref", True))
 
+    @cache_sync_with_id('get_document')
     def get_item(self, *args, **kwargs):
+        logger.debug(f"Fetching [{kwargs.get('_id')}] from database.")
         return dbo.find_one(
             collection_name=kwargs.get("collection", self.collection),
             query=kwargs.get("query", {"_id": ObjectId(kwargs.get("_id"))}),

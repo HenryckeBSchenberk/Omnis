@@ -34,7 +34,7 @@ class ProcessObjectManager(SSPR, BaseManager):
         asyncio.run(self.websocket.broadcast_on_change(self.status, self.status))
 
     def start(self, **kwargs):
-        self.load(kwargs.get('_id') , kwargs.get('object_id'))
+        self.load(kwargs.get('_id') , kwargs.get('object_id'), kwargs.get('user'))
         self.process.start()
 
     def stop(self,  **kwargs):
@@ -80,12 +80,12 @@ class ProcessObjectManager(SSPR, BaseManager):
         return getattr(self.__status[0], 'status', {'status': 'UNKNOWN'})
     
 
-    def load(self, _id=False, object_id=False):
+    def load(self, _id=False, object_id=False, user=None):
         self.unload()
         full_sketch = dbo.find_one('sketch', _id or self.process.sketch.id)
 
         object_id = object_id or self.process.object.id
-        obj = ObjectManager.get_by_id(object_id) or Object(**ObjectManager.get_item(_id=object_id, user=ObjectManager.user))
+        obj = ObjectManager.get_item(_id=object_id, user=user)
         
         loaded = loadConfig(full_sketch['content'], obj)
         if loaded:
