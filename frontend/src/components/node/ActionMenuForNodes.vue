@@ -220,13 +220,13 @@ export default {
 
       this.WebSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log(data)
+        // console.log(data)
         this.actualStatus = data.status.toLowerCase();
       };
 
       this.WebSocket.onopen = (event) => {
-        console.log(event);
-        console.log(this.$t('alerts.wsConnectSuccess'));
+        // console.log(event);
+        console.log('/process', this.$t('alerts.wsConnectSuccess'));
       };
 
       this.WebSocket.onclose = (event) => {
