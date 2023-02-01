@@ -78,11 +78,11 @@ const LIST_MATRIX = gql`
 
 const ADD_PROCESS = gql`
   mutation ADD_PROCESS(
-    $sketch: DBREF_sketch
+    $sketch: DBREF
     $description: String
     $img: String
     $name: String
-    $object: DBREF_object
+    $object: DBREF
   ) {
     create_process(
       input: {
@@ -102,8 +102,8 @@ const UPDATE_PROCESS = gql`
     $description: String
     $img: String
     $name: String
-    $sketch: DBREF_sketch
-    $object: DBREF_object
+    $sketch: DBREF
+    $object: DBREF
   ) {
     update_process(
       _id: $_id
@@ -176,8 +176,8 @@ export default {
             description: obj.description,
             img: obj.img,
             name: obj.name,
-            sketch: obj.sketch,
-            object: obj.object,
+            sketch: {'_id':obj.sketch._id, 'type':'sketch'},
+            object: {'_id':obj.object._id, 'type':'object'},
           },
         })
 
@@ -203,8 +203,8 @@ export default {
             description: obj.description,
             img: obj.img,
             name: obj.name,
-            sketch: obj.sketch,
-            object: obj.object,
+            sketch: {'_id':obj.sketch._id, 'type':'sketch'},
+            object: {'_id':obj.object._id, 'type':'object'}
           },
         })
 
