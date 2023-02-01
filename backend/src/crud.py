@@ -6,37 +6,96 @@ from datetime import datetime
 from src.utility.crud.user import User
 from src.cache import CacheManager
 
-def cache_sync_with_kwargs(cache_manager_func_name):
+
+def ExecutarNoCache(cache_name: str, source_before: bool):
+    """
+    Decorador para sincronizar o cache com o banco de dados.
+    
+    Arguments:
+        cache_name (str): Nome da função do cache a ser utilizada.
+        source_before (bool): Se deve executar a função base antes ou depois da chamada ao cache.
+    
+    Returns:
+        decorator: Decorador que pode ser aplicado a uma função.
+    """
     def decorator(func):
+        """
+        Decorador a ser aplicado à função base.
+        
+        Arguments:
+            func (function): Função base a ser sincronizada com o cache.
+        
+        Returns:
+            wrapper: Função envoltória que realiza a sincronização do cache com a função base.
+        """
         def wrapper(self, *args, **kwargs):
-            result = func(self, *args, **kwargs)
-            if kwargs.pop('cache', True):
-                if hasattr(self, 'cache_manager') and callable(getattr(self.cache_manager, cache_manager_func_name)):
-                    getattr(self.cache_manager, cache_manager_func_name)(kwargs.get('input', {}), kwargs.get('_id'))
+            """
+            Função envoltória que realiza a sincronização do cache com a função base.
+            
+            Arguments:
+                self (object): Referência à instância que está sendo invocada.
+                *args (tuple): Tupla de argumentos passados à função base.
+                **kwargs (dict): Dicionário de argumentos nomeados passados à função base.
+            
+            Keyword Arguments:
+                cache (bool): Deverá executar o cache? (default: True)
+                _id (str): Identificador do documento.
+                input (dict): Conteúdo do documento.
+            
+            Returns:
+                result: Resultado da sincronização do cache com a função base.
+            """
+            cache = kwargs.pop('cache', True)                      # Devera executar o cache?
+            cache_func = getattr(self.cache_manager, cache_name)   # Define qual afunção do cache
+            if source_before:                                      # Verifica se deve executar a função base antes ou depois
+                result = func(self, *args, **kwargs)
+                if cache:
+                    #? O ideal seria passar **kwargs??, mas isso afeta a definição da função do cache :c
+                    cache_func(kwargs.get('input', {}), kwargs.get('_id'))
+                return result   # Retorna o valor do banco, (já está em memória mesmo)
+            
+            elif cache: # Se não for pra executar antes, mas tiver que usar o cache.
+                #? O ideal seria passar **kwargs??, mas isso afeta a definição da função do cache :c
+                result = cache_func(kwargs.get('_id'))
+                #! Função de remoção deve ser executada no source, sempre!
+                if cache_name != 'remove_document':
+                    if result:
+                        return result   # Retorna o valor do cache
+                    if kwargs.get('_id'):
+                        logger.warning(f"[{self.cache_manager.collection_name}:{kwargs.get('_id')}] not found on cache or expired.")
+            # Caso o cache não tenha retornado nada
+            result = func(self, *args, **kwargs)    # Executa a função base
+            # if cache_name=='get_all_documents':
+            if not source_before and cache_name in ['get_document', 'get_all_documents']:
+                if result is not None:
+                    logger.warning(f"Adding to cache: {kwargs.get('_id')}")
+
+                    # Atualiza o cache
+                    #? O ideal seria passar **kwargs??, mas isso afeta a definição da função do cache :c
+                    if cache_name == 'get_all_documents':
+                        for item in result:
+                            self.cache_manager.add_document(item, item.get('_id'))
+                            logger.debug(f"[{item.get('_id')}] stored on cache.")
+                        if not isinstance(result, list): result.rewind()
+                    else:
+                        self.cache_manager.add_document(result, kwargs.get('_id'))
+                        logger.debug(f"[{kwargs.get('_id')}] stored on cache.")
+                else:
+                    raise KeyError(f"Document not found: {kwargs.get('_id')}")
             return result
         return wrapper
     return decorator
 
-def cache_sync_with_id(cache_manager_func_name):
+def ValidadorDeParâmetros(required_params, optional_params=[]):
     def decorator(func):
-        def wrapper(self, *args, **kwargs):
-            if kwargs.pop('cache', True):
-                if hasattr(self, 'cache_manager') and callable(getattr(self.cache_manager, cache_manager_func_name)):
-                    result = getattr(self.cache_manager, cache_manager_func_name)(kwargs.get('_id'))
-                    if cache_manager_func_name != 'remove_document':
-                        if result is not None:
-                            return result
-                        logger.warning(f"[{kwargs.get('_id')}] document is not cached yet, fetching from database...")
-                else:
-                    logger.warning(f"Cache manager not found for {self.collection} or {cache_manager_func_name} is not a callable.")
-            result = func(self, *args, **kwargs)
-            if cache_manager_func_name == 'get_document':
-                if result is not None:
-                    logger.warning(f"Adding document to cache: {kwargs.get('_id')}")
-                    self.cache_manager.add_document(result, kwargs.get('_id'))
-                else:
-                    raise KeyError(f"Document not found: {kwargs.get('_id')}")
-            return result
+        def wrapper(self, **kwargs):
+            for param in required_params:
+                assert kwargs.get(param, False), f'"{param}" parameter cannot be empty'
+            #remove all kwags that no in required_params or optional_params
+            for param in list(kwargs.keys()):
+                if param not in required_params and param not in optional_params:
+                    kwargs.pop(param)
+            return func(self, **kwargs)
         return wrapper
     return decorator
 
@@ -52,17 +111,17 @@ class CRUD:
         self.user = User(f'{collection}', 'CRUD', self.auth_level, '')
 
         self.create = (
-            (auth(self.auth_level))(self.create) if self.auth_level else self.create
+            (auth(self.auth_level))(self.create)
         )
         mutation.set_field(f"create_{self.collection}", self.create)
 
         self.update = (
-            (auth(self.auth_level))(self.update) if self.auth_level else self.update
+            (auth(self.auth_level))(self.update)
         )
         mutation.set_field(f"update_{self.collection}", self.update)
 
         self.delete = (
-            (auth(self.auth_level))(self.delete) if self.auth_level else self.delete
+            (auth(self.auth_level))(self.delete)
         )
         mutation.set_field(f"delete_{self.collection}", self.delete)
 
@@ -74,77 +133,85 @@ class CRUD:
         mutation.set_field(f"duplicate_{self.collection}", self.duplicate)
 
         self.get_list = (
-            (auth(self.auth_level))(self.get_list) if self.auth_level else self.get_list
+            (auth(self.auth_level))(self.get_list)
         )
         query.set_field(f"get_{self.collection}_list", self.get_list)
 
         self.get_item = (
-            (auth(self.auth_level))(self.get_item) if self.auth_level else self.get_item
+            (auth(self.auth_level))(self.get_item)
         )
         query.set_field(f"get_{self.collection}_item", self.get_item)
 
-    @cache_sync_with_kwargs('add_document')
-    def create(self, *args, **kwargs):
-        logger.debug(f"Creating [{kwargs.get('_id')}] in database.")
-        _id = ObjectId(kwargs.get("_id"))
-        kwargs["input"].update(
+    @ExecutarNoCache('add_document', True)
+    @ValidadorDeParâmetros(['input', 'user'], ['_id', 'collection'])
+    def create(self, input, user, _id=None, collection=None):
+        logger.debug(f"Creating [{_id}] in database.")
+        _id = ObjectId(_id)
+        input.update(
             {
-                "created_by": kwargs["user"].dbref,
+                "created_by": user.dbref,
                 "created_at": datetime.utcnow().timestamp(),
                 "_id": _id,
             }
         )
         dbo.insert_one(
-            kwargs.get("collection", self.collection), kwargs.get("input", {})
+            collection or self.collection, input or {}
         )
         return _id
 
-    @cache_sync_with_kwargs('update_cache')
-    def update(self, *args, **kwargs):
-        logger.debug(f"Updating [{kwargs.get('_id')}] in database.")
-        _id = ObjectId(kwargs.get("_id"))
-        kwargs.get("input", {"input":{}}).update ({
-            "edited_by": kwargs["user"].dbref,
+    @ExecutarNoCache('update_document', True)
+    @ValidadorDeParâmetros(['input', 'user'], ['_id', 'collection'])
+    def update(self, input, user, _id=None, collection=None):
+        logger.debug(f"Updating [{_id}] in database.")
+        _id = ObjectId(_id)
+        (input or {}).update ({
+            "edited_by": user.dbref,
             "updated_at": datetime.utcnow().timestamp(),
         })
 
         dbo.update_one(
-            kwargs.get("collection", self.collection),
+            collection or self.collection,
             {"_id": _id},
-            {"$set": kwargs.get("input", {})},
+            {"$set": input or {}},
         )
         return _id
 
-    def duplicate(self, *args, **kwargs):
-        logger.debug(f"Duplicating [{kwargs.get('_id')}] from database.")
-        item = self.get_item(*args, **kwargs)
+    #! Não é necessário executar nada no cache, pois o "create" já faz isso
+    @ValidadorDeParâmetros(['user', '_id'])
+    def duplicate(self, _id, user):
+        logger.debug(f"Duplicating [{_id}] from database.")
+        item = self.get_item(_id=_id, user=user)
         item.pop("_id")
-        kwargs.pop("_id")
         if item.get("name"):
             item.update({"name": item["name"] + " - copy"})
-        new_id = self.create(*args, **kwargs, input=item)
-        self.update(*args, **kwargs, _id=new_id) #???
+        new_id = self.create(_id=ObjectId(),  user=user ,input=item)
         return new_id
 
-    @cache_sync_with_id('remove_document')
-    def delete(self, *args, **kwargs):
-        logger.debug(f"Deleting [{kwargs.get('_id')}] from database.")
-        _id = ObjectId(kwargs.get("_id"))
-        dbo.delete_one(kwargs.get("collection", self.collection), {"_id": _id})
+    @ExecutarNoCache('remove_document', False)
+    @ValidadorDeParâmetros(['_id'], ['collection'])
+    def delete(self, _id, collection=None):
+        logger.debug(f"Deleting [{_id}] from database.")
+        _id = ObjectId(_id)
+        dbo.delete_one(collection or self.collection, {"_id": _id})
 
-
-    # @cache_sync_with_id('get_all_documents') #How resolve Refs?
-    def get_list(self, *args, **kwargs):
+    @ExecutarNoCache('get_all_documents', False)
+    @ValidadorDeParâmetros([], ['collection', 'query', 'filter'])
+    def get_list(self, collection=None, query={}, filter={}):
         logger.debug(f"Fetching [{self.collection}] from database.")
-        return dbo.find_many(kwargs.get("collection", self.collection), kwargs.get("filter", {}), ref=kwargs.get("ref", True))
+        return dbo.find_many(
+            collection_name=collection or self.collection,
+            query= query,
+            data=filter,
+        )
 
-    @cache_sync_with_id('get_document')
-    def get_item(self, *args, **kwargs):
-        logger.debug(f"Fetching [{kwargs.get('_id')}] from database.")
+    @ExecutarNoCache('get_document', False)
+    @ValidadorDeParâmetros(['_id'], ['collection', 'query', 'filter', 'ref'])
+    def get_item(self, _id, collection=None, query=None, filter={}):
+        logger.debug(f"Fetching [{_id}] from database.")
         return dbo.find_one(
-            collection_name=kwargs.get("collection", self.collection),
-            query=kwargs.get("query", {"_id": ObjectId(kwargs.get("_id"))}),
-            data=kwargs.get("filter", {}),
+            collection_name=collection or self.collection,
+            query=query or {"_id": ObjectId(_id)},
+            data=filter,
         )
 
 

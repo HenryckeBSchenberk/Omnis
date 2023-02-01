@@ -1,5 +1,3 @@
-scalar DBREF_sketch
-
 type sketch {
   _id: ID
   parent_id: ID

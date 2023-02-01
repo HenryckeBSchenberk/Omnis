@@ -1,25 +1,27 @@
 from bson import ObjectId
-from src.nodes.manager import Manager as BaseManager, sync
+from src.nodes.manager import Manager as BaseManager, ExecutarNoCrud as sync
 
 
 class Object:
     out_attrs = ['created_by', 'created_at', 'edited_by', 'updated_at']
 
-    def __init__(self, _id=None, auto_register=True, **content):
+    def __init__(self, _id=None, unsync_instances=False, **content):
         """
         A classe "Object" serve para armazenar valores que são compartilhados entre instancias com o mesmo '_id'.
 
         :param _id: (opcional) ID a ser atribuído ao objeto. Se não for passado, um ID será gerado automaticamente.
         :type _id: int or str
-        :param auto_register: (opcional) Se True, o objeto será automaticamente registrado no ObjectManager. Padrão: True
-        :type auto_register: bool
+        :param unsync_instances: (opcional) Se True, o objeto será automaticamente registrado no ObjectManager. Padrão: True
+        :type unsync_instances: bool
         :param **content: (opcional) Atributos e valores a serem adicionados ao objeto.
         """
         self.__dict__['_id'] = ObjectId(_id)
         self.__dict__['content'] = {}
         if self._id not in Manager.store:
-            if auto_register:
+            if not unsync_instances:
                 Manager.store[self._id] = self
+            else:
+                self.__dict__['unsync_instances'] = unsync_instances
         self.__update(**content)
 
     def __getattr__(self, name):
@@ -92,6 +94,8 @@ class Object:
         Retorna o ponteiro do objeto, ou seja, a instancia com mesmo _id armazenada no manager.
         :return: Ponteiro do objeto.
         """
+        if self.__dict__.get('unsync_instances',False):
+            return self.__dict__
         return Manager.store[self._id].__dict__
 
     def __str__(self):

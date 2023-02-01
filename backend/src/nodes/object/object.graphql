@@ -1,5 +1,3 @@
-scalar DBREF_object
-
 type object {
     _id: ID!
     content: JSON!

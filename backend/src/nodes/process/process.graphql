@@ -1,5 +1,3 @@
-scalar DBREF_process
-
 type process implements metadata {
   _id:  ID!
   img: String
@@ -19,8 +17,8 @@ input reg_process {
   img: String
   name: String
   description: String 
-  sketch: DBREF_sketch
-  object: DBREF_object
+  sketch: DBREF
+  object: DBREF
 }
 
 extend type Query {

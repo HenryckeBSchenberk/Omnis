@@ -1,6 +1,6 @@
 from src.crud import CRUD
 
-def sync(crud_operation):
+def ExecutarNoCrud(crud_operation):
     """
     Decorador para sincronizar operações CRUD com o gerenciador de coleção
     :param crud_operation: Operação CRUD a ser sincronizada
@@ -24,7 +24,7 @@ class Manager:
     def __init__(self, collection, auth_level):
         self.crud = CRUD(collection, auth_level)
     
-    @sync('update')
+    @ExecutarNoCrud('update')
     def update(self, *args, **kwargs):
         """
         Atualiza um item na coleção.
@@ -34,7 +34,7 @@ class Manager:
         """
         raise NotImplementedError
     
-    @sync('create')
+    @ExecutarNoCrud('create')
     def create(self, *args, **kwargs):
         """
         Cria um item na coleção.
@@ -44,7 +44,7 @@ class Manager:
         """
         raise NotImplementedError
 
-    @sync('delete')
+    @ExecutarNoCrud('delete')
     def delete(self, *args, **kwargs):
         """
         Deleta um item na coleção.
@@ -54,7 +54,7 @@ class Manager:
         """
         raise NotImplementedError
     
-    @sync('duplicate')
+    @ExecutarNoCrud('duplicate')
     def duplicate(self, *args, **kwargs):
         """
         Método para duplicar um item na coleção.
@@ -63,7 +63,7 @@ class Manager:
         """
         raise NotImplementedError
 
-    @sync('get_item')
+    @ExecutarNoCrud('get_item')
     def get_item(self, *args, **kwargs):
         """
         Método para obter um item específico da coleção.
@@ -72,7 +72,7 @@ class Manager:
         """
         raise NotImplementedError
     
-    @sync('get_list')
+    @ExecutarNoCrud('get_list')
     def get_list(self, *args, **kwargs):
         """
         Método para obter uma lista de itens da coleção.
