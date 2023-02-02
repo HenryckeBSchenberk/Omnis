@@ -1,5 +1,6 @@
 from src.nodes.alerts.alert_obj import Alert
-from src.nodes.base_node import BaseNode, Observer
+from src.nodes.base_node import BaseNode
+from src.manager.matrix_manager import MatrixManager as Manager
 from src.nodes.node_manager import NodeManager
 from src.nodes.matrix.matrix_obj import Blister, Slot
 from bson import ObjectId
@@ -8,68 +9,6 @@ from api.decorators import for_all_methods
 import numpy as np
 
 NODE_TYPE = "MatrixNode"
-
-"""
-            [
-            "matrix",
-            {
-              "id": "6256d313daaa135378e4cb27",
-              "name": "Blister_0",
-              "slots": {
-                "qtd": {
-                  "X": 5,
-                  "Y": 10
-                },
-                "margin": {
-                  "X": 3,
-                  "Y": 3
-                },
-                "size": {
-                  "X": 41,
-                  "Y": 24
-                }
-              },
-              "subdivisions": {
-                "qtd": {
-                  "X": 1,
-                  "Y": 1
-                },
-                "margin": {
-                  "X": 0,
-                  "Y": 0
-                }
-              }
-            }
-          ],
-
-          {
-
-  "shape": [
-    slot['qtd'][x-y
-    ] * subdivisions['qtd'][x->y],
-  ],
-  "slot_config": {
-    "sizes": [
-      slot['size'][x-y],
-    ],
-    "borders": [
-        slot['margin'][x-y],
-    ],
-    "origin": [
-        ??? 800,
-        ??? 200
-    ]
-    "counter": [
-      config[shape][x-y]/slot['qtd'][x-y],
-    ],
-    "extra": [
-      subdvision['margin'][x-y],
-    ]
-    ]
-  },
-          }
-"""
-
 
 def convert_to_array(dict_, type_=float):
     return np.fromiter(dict_.values(), dtype=type_)
@@ -90,26 +29,9 @@ class MatrixNode(BaseNode):
     def __init__(self, name, id, options, output_connections, input_connections, default_object=None):
         super().__init__(name, NODE_TYPE, id, options, output_connections, default_object)
         self.input_connections = input_connections
-
-        slots = options["matrix"]["slots"]
-        subdivisions = options["matrix"]["subdivisions"]
-        shape = convert_to_array(slots["qtd"], int) * convert_to_array(
-            subdivisions["qtd"], int
-        )
-        slot_config = {
-            "sizes": convert_to_array(slots["size"]),
-            "borders": convert_to_array(slots["margin"]),
-            "origin": convert_to_array(options["matrix"]["origin"]),
-            "counter": convert_to_array(slots["qtd"], int),
-            "extra": convert_to_array(subdivisions["margin"]),
-            "scale": float(options["matrix"]["scale"]),
-        }
-        # self.blister = Blister(shape=shape, name=options["matrix"]["name"], _id=options["matrix"]["id"],  slot_config=slot_config, order=options["matrix"]["order"])
         try:
             self.blister = Blister(
-                **dbo.find_one(
-                    "matrix-manager", {"_id": ObjectId(options["matrix"]["id"])}
-                )
+                Manager.get_item(_id=ObjectId(options["matrix"]["id"]), user=Manager.crud.user)
             )
 
         except TypeError:
@@ -161,10 +83,7 @@ class MatrixNode(BaseNode):
     def get_info(**kwargs):
         return {
             "options": list(
-                map(
-                    MatrixNode.normalize_blister_get_info,
-                    dbo.find_many("matrix-manager", {}),
-                )
+                    dbo.find_many("matrix", {}),
             ),
         }
 

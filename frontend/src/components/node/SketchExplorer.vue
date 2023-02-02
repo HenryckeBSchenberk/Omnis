@@ -175,9 +175,9 @@ const DUPLICATE_NODE_SHEET = gql`
   }
 `;
 
-const LOAD_CONFIG = gql`
-  mutation ($_id: ID!) {
-    load_config(_id: $_id) {
+const GET_CONFIG = gql`
+  query ($_id: ID!) {
+    get_sketch_item(_id: $_id) {
       _id
       name
       description
@@ -330,17 +330,17 @@ export default {
     },
 
     async open() {
+      console.log('open', this.selectedId)
       await this.$apollo
-        .mutate({
-          mutation: LOAD_CONFIG,
+        .query({
+          query: GET_CONFIG,
           variables: {
             _id: this.selectedId,
           },
         })
         .then((data) => {
           // Result
-          console.log('data', data.data.load_config);
-          this.loadTabId(data.data.load_config);
+          this.loadTabId(data.data.get_sketch_item);
           this.dialog = true;
           this.$emit('close-dialog');
           // this.isLoading = false;

@@ -33,3 +33,8 @@ services:
         - ./mongodb:/data/db
       ports:
         - "${MONGO}:27017"
+
+    redis:
+      env_file: .env.production
+      ports:
+        - "${REDIS}:6379"

@@ -68,7 +68,8 @@ for mod in package_nodes:
         )
     )
 
-from src.nodes.object.manager import Manager as ObjectManager
+from src.nodes.object.object import Manager as OM
+from src.nodes.sketch.sketch import Manager as SM
+from src.nodes.user.user_manager import Manager as UM
 from src.nodes.variable.variable import __variable
-from src.nodes.sketch.sketch import __sketch
 from src.nodes.levels.levels import __levels

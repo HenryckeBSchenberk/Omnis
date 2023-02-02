@@ -62,7 +62,7 @@ class Option:
             if match:
                 try:
                     if match.group('prop'):
-                        obj = Manager.get_by_name(match.group('name')) or Object(**Manager.get_item(query={'content.name': match.group('name')}, user=Manager.user))
+                        obj = Manager.get_by_name(match.group('name'))
                 except TypeError:
                     # Manager.get_item() return None, ** will fail.
                     pass

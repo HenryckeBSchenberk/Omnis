@@ -1,5 +1,5 @@
 from bson import ObjectId
-from numpy import ndarray, ndenumerate, generic, fliplr, rot90, flipud, array, integer, floating
+from numpy import ndarray, ndenumerate, generic, fliplr, rot90, flipud, array, integer, floating, fromiter
 from json import loads, dumps
 from cv2 import (
     drawMarker,
@@ -11,7 +11,28 @@ from cv2 import (
 from json import JSONEncoder
 from src.crud import CRUD
 from threading import Event
-__matrix = CRUD("matrix", "operator")
+
+def convert_to_array(dict_, type_=float):
+    return fromiter(dict_.values(), dtype=type_)
+
+def parser(kwargs):
+    slots = kwargs["slots"]
+    subdivisions = kwargs["subdivisions"]
+    kwargs.update({
+        "name": kwargs["name"],
+        "shape": (convert_to_array(slots["qtd"], int) * convert_to_array(subdivisions["qtd"], int)).tolist(),
+        "order": kwargs.get("order", "TLR"),
+        "slot_config": {
+            "sizes": convert_to_array(slots["size"]).tolist(),
+            "borders": convert_to_array(slots["margin"]).tolist(),
+            "origin": convert_to_array(kwargs["origin"]).tolist(),
+            "counter": convert_to_array(slots["qtd"], int).tolist(),
+            "extra": convert_to_array(subdivisions["margin"]).tolist(),
+            "scale": float(kwargs.get("scale", 1)),
+        },
+        "_id": ObjectId(kwargs.get("_id", kwargs['_id']))
+    })
+    return kwargs
 
 class CustomEncoder(JSONEncoder):
     def default(self, obj):
@@ -131,7 +152,7 @@ class Slot:
 
     def __str__(self) -> str:
         # return f"((item slot) {self.item} at center:{self.center}, position:{self.position[::-1]})"
-        return f"{self.center if not self.item else self.item}"
+        return f"{self.item or self.center}"
 
     def __repr__(self):
         return str(self)
@@ -249,18 +270,21 @@ class Blister:
      [03,13,23,33]]  i=3, j(x)=0,1,2,3 |\n
     """
 
-    def __init__(self, shape, name, slot_config, _id=None, order='TLR', **kwargs) -> None:
-        self._id = ObjectId(_id)
-        self.slot_config = (
-            slot_config if not isinstance(slot_config, Slot) else slot_config.export()
-        )
-        
-        self.name = name
-        self.shape = tuple(shape)
-        self.kwargs = kwargs
-        self.empty = Event()
-        self.data = self.re_order(self.generate_data(shape, **self.slot_config), order)
-        self.reset_iterator()
+    def __init__(self, unparsed={}, shape=None, name=None, slot_config=None, _id=None, order='TLR', **kwargs) -> None:
+        if unparsed:
+            self = Blister.__init__(self, **parser(unparsed))
+        else:
+            self._id = ObjectId(_id)
+            self.slot_config = (
+                slot_config if not isinstance(slot_config, Slot) else slot_config.export()
+            )
+            
+            self.name = name
+            self.shape = tuple(shape)
+            self.kwargs = kwargs
+            self.empty = Event()
+            self.data = self.re_order(self.generate_data(shape, **self.slot_config), order)
+            self.reset_iterator()
 
     def __str__(self) -> str:
         return f"((Blister) shape:{self.shape}, slots:{len(self)})"
@@ -417,8 +441,3 @@ class Blister:
     def __iter__(self):
         return self
 
-if __name__ == '__main__':
-    m = array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    print(matrix_sorter.get('BRL', m))
-    print(matrix_sorter.get('TRBS', m))
-    print(matrix_sorter.get('TRL', m))

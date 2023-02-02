@@ -13,7 +13,7 @@ import queue
 event_list = queue.Queue()
 
 from src.manager.process_manager import ProcessManager as process
-from src.utility.crud.user import User
+from src.user import User
 
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")
@@ -145,7 +145,7 @@ class BaseNode(Observer):
                 logger.error(f"[{self.name}] || Can't find node {target._to.nodeId}")
                 raise IndexError(f"Can't find node {target._to.nodeId}")
         else:
-            logger.error(
+            logger.warning(
                 f"Node {self.name} has no output connection for trigger {trigger}"
             )
 

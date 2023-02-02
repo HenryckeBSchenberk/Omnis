@@ -38,3 +38,8 @@ services:
         - ./mongodb:/data/db
       ports:
         - "${MONGO}:27017"
+
+    redis:
+      env_file: .env.development
+      ports:
+        - "${REDIS}:6379"

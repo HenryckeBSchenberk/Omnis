@@ -47,7 +47,7 @@ except (FileNotFoundError, IOError):
         public_key_file.write(public_key)
 
 
-from src.utility.crud.user import User
+from src.user import User
 
 def auth(lvl=None):
     def decorator(resolver):
@@ -63,7 +63,6 @@ def auth(lvl=None):
             else:
                 user = User(**token) if not kwargs.get('user') else kwargs.get('user')
                 if user >= lvl:
-                    logger.debug(f"User: {user.json} requesting {resolver.__name__}")
                     kwargs.update({'user':user})
                     return resolver(*args, **kwargs)
                     # return resolver(obj, info, *args, **kwargs)
