@@ -10,8 +10,20 @@ def ExecutarNoCrud(crud_operation):
             if not kwargs.get('user', False):
                 raise KeyError('User not found')
             #! Slow should be Local->Cache->DB
-            result = getattr(self.crud, crud_operation)(*args, **kwargs)
-            return func(self, *args, **kwargs) or result
+
+            try:
+                result = func(self, *args, **kwargs) # search-locally
+            except KeyError:
+                result = None
+
+            if result is None:
+                result = getattr(self.crud, crud_operation)(*args, **kwargs) # search-cache/db
+
+            # if cached is None:
+            #     raise KeyError('Item not found')
+            
+             # update-local and return
+            return self.set_from_cached(result)
         return wrapper
     return decorator
 
@@ -81,3 +93,13 @@ class Manager:
         :param **kwargs: argumentos nomeados
         """
         raise NotImplementedError
+    
+    def set_from_cached(self, cached):
+        """
+        Método para atualizar o objeto local com o objeto da cache.
+        :param cached: Objeto da cache
+        """
+        return cached
+    
+    def now(self):
+        return self.crud.now()

@@ -146,11 +146,11 @@ class CRUD:
     @ValidadorDeParâmetros(['input', 'user'], ['_id', 'collection'])
     def create(self, input, user, _id=None, collection=None):
         logger.debug(f"Creating [{_id}] in database.")
-        _id = ObjectId(_id)
+        _id = ObjectId(_id or input.get('_id'))
         input.update(
             {
                 "created_by": user.dbref,
-                "created_at": datetime.utcnow().timestamp(),
+                "created_at": self.now(),
                 "_id": _id,
             }
         )
@@ -163,10 +163,10 @@ class CRUD:
     @ValidadorDeParâmetros(['input', 'user'], ['_id', 'collection'])
     def update(self, input, user, _id=None, collection=None):
         logger.debug(f"Updating [{_id}] in database.")
-        _id = ObjectId(_id)
+        _id = ObjectId(_id or input.get('_id'))
         (input or {}).update ({
             "edited_by": user.dbref,
-            "updated_at": datetime.utcnow().timestamp(),
+            "updated_at": self.now(),
         })
 
         dbo.update_one(
@@ -214,6 +214,8 @@ class CRUD:
             data=filter,
         )
 
+    def now(self):
+        return datetime.utcnow().replace(microsecond=0).timestamp()
 
 class SSPR(CRUD):
     """
@@ -258,3 +260,9 @@ class SSPR(CRUD):
 
     def select(self, *args, **kwargs):
         raise TypeError("resume not implemented")
+
+#{'_id': ObjectId('63dbeff87894945139dfaa4b'), 'content': {'name': 'DB+CACHE+LOCAL', 'type': 'object_test'}, 'created_by': DBRef('users', ObjectId('63dbeff77894945139dfa94d'))                                } 
+#{'_id': ObjectId('63dbeff87894945139dfaa4b'), 'content': {'name': 'DB+CACHE+LOCAL', 'type': 'object_test'}, 'created_by': DBRef('users', ObjectId('63dbeff77894945139dfa94d')), 'created_at': 1675358200.68123}
+
+#{'_id': ObjectId('63dbf17392003387cfc8c751'), 'content': {'name': 'DB+CACHE+LOCAL', 'type': 'object_test'}, 'created_by': DBRef('users', ObjectId('63dbf17292003387cfc8c653')), 'created_at': 1675358520.0}
+#{'_id': ObjectId('63dbf17392003387cfc8c751'), 'content': {'name': 'DB+CACHE+LOCAL', 'type': 'object_test'}, 'created_by': DBRef('users', ObjectId('63dbf17292003387cfc8c653')), 'created_at': 1675358520.0}

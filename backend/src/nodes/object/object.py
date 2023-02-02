@@ -129,7 +129,7 @@ class Object_Manager(BaseManager):
                 return obj
 
     @sync('create')
-    def create(self, *args, **kwargs):
+    def create(self, input, user):
         """
             Cria um objeto
         :param input: dicionário com dados do objeto
@@ -137,24 +137,26 @@ class Object_Manager(BaseManager):
 
         :_id: É opcional e será gerado automaticamente caso não seespecificado. Instancias com o mesmo _id serão consideradas a mesma instancia.
         """
-        Object(**kwargs.get('input'))
+        _id = Object(**input, created_by=user.dbref, created_at=self.now())._id
+        input.update({'_id':_id })     # Export _id for CRUD sync
+        
 
     @sync('duplicate')
     def duplicate(self, *args, **kwargs):
         pass
 
     @sync('update')
-    def update(self, *args, **kwargs):
+    def update(self, _id, input, user):
         """
             Atualiza um objeto
         :param _id: id do objeto a ser atualizado
         :param user: usuário autorizado
         :param input: dicionário com dados do objeto
         """
-        _id = kwargs.get('_id')
+        # _id = kwargs.get('_id')
         obj = self.store.get(_id, None)
         if obj:
-            obj.load(**kwargs['input'])
+            obj.load(**input, edited_by=user.dbref, updated_at=self.now())
         else:
             raise KeyError("Object not found locally")
 
@@ -166,13 +168,7 @@ class Object_Manager(BaseManager):
         :param user: usuário autorizado
         :return: objeto encontrado ou None
         """
-        _temp_obj = self.store.get(kwargs.get('_id'), None)
-
-        if _temp_obj is None:
-            _temp_obj = self.crud.get_item(*args, **kwargs)
-            assert _temp_obj is not None, "Object not found"
-            return Object(**_temp_obj)
-        return _temp_obj or 1
+        return self.store.get(kwargs.get('_id'), None)
 
     @sync('get_list')
     def get_list(self, *args, **kwargs):
@@ -195,5 +191,11 @@ class Object_Manager(BaseManager):
         if _id in self.store:
             self.store.pop(_id)
 
+    def set_from_cached(self, cached):
+        if isinstance(cached, dict):
+            if all([item in cached for item in['_id', 'content']]):
+                return Object(**cached) # add to store automatically
+        return cached
+    
 
 Manager = Object_Manager()

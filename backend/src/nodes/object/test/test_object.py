@@ -72,6 +72,7 @@ class TestObjecManagertLocal(unittest.TestCase):
     def tearDown(self):
         Manager.delete(_id=self.item._id, user=self.user)
         del self.item
+
     
     def test_object_manager_get_local(self):
         """[OBJECT_MANAGER] Procurando objeto sincronizado localmente"""
@@ -82,6 +83,7 @@ class TestObjecManagertLocal(unittest.TestCase):
 
         # Assert that the object is on cache and localy
         self.assertEqual(Manager.crud.cache_manager.get_document(EXAMPLE["_id"]), EXAMPLE)
+        print(Manager.store, EXAMPLE)
         self.assertIsInstance(Manager.store.get(EXAMPLE["_id"], None), Object)
 
         # Call get_item and let it resolve the object
