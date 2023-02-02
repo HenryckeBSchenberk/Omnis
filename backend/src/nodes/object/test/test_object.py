@@ -1,6 +1,6 @@
 import unittest
 from src.nodes.object.object import Object, Manager
-from src.utility.crud.user import DBRef, ObjectId
+from src.user import DBRef, ObjectId
 from src.test import users
 
 def _object_pattern_test(self, example):

@@ -129,17 +129,6 @@ type control_status{
   endstops: JSON
 }
 
-type user {
-    _id: ID
-    username: String
-    avatar_image: String
-    email: String
-    last_name: String
-    first_name: String
-    level: String
-    last_access: timestamptz
-  }
-
 type user_with_token{
   user: user
   token: String

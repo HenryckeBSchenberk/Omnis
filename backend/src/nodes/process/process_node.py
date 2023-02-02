@@ -4,7 +4,7 @@ from src.manager.process_manager import ProcessManager as process
 from api import logger, exception
 from api.decorators import for_all_methods
 from threading import Thread
-from src.utility.crud.user import User
+from src.user import User
 
 NODE_TYPE = "ProcessNode"
 

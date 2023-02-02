@@ -13,7 +13,7 @@ import queue
 event_list = queue.Queue()
 
 from src.manager.process_manager import ProcessManager as process
-from src.utility.crud.user import User
+from src.user import User
 
 NODE_TYPE = "BASE_NODE"
 rtc_status = SubscriptionFactory(nodes, "nodes")

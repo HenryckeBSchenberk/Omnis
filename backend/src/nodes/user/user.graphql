@@ -1,0 +1,32 @@
+type user {
+    _id: ID
+    username: String
+    avatar_image: String
+    email: String
+    last_name: String
+    first_name: String
+    level: String
+    last_access: timestamptz
+  }
+
+input reg_user {
+  username: String
+  password: String
+  email: String
+  first_name: String
+  last_name: String
+  level: String
+}
+
+
+extend type Query {
+    get_users_list: [user]
+    get_users_item(_id: ID): user
+}
+
+extend type Mutation {
+    create_users(input: reg_user): ID
+    update_users(_id: ID!, input: reg_user): ID
+    delete_users(_id: ID!): ID
+    duplicate_users(_id: ID!): ID
+}

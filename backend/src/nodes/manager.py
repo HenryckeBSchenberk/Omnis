@@ -9,6 +9,7 @@ def ExecutarNoCrud(crud_operation):
         def wrapper(self, *args, **kwargs):
             if not kwargs.get('user', False):
                 raise KeyError('User not found')
+            #! Slow should be Local->Cache->DB
             result = getattr(self.crud, crud_operation)(*args, **kwargs)
             return func(self, *args, **kwargs) or result
         return wrapper

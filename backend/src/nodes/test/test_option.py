@@ -1,7 +1,7 @@
 import unittest
 from src.nodes.option import Option
 from src.nodes.object.object import Object, Manager
-from src.utility.crud.user import User
+from src.user import User
 
 class TestOption(unittest.TestCase):
     def setUp(self):

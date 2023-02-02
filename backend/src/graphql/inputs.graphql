@@ -53,16 +53,6 @@ input CalibrateRequestInput {
   dictionary_name: String!
 }
 
-
-input reg_user {
-  username: String
-  password: String
-  email: String
-  first_name: String
-  last_name: String
-  level: String
-}
-
 input reg_target{
   name: String
   description: String

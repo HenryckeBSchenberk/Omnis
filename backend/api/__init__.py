@@ -47,7 +47,7 @@ except (FileNotFoundError, IOError):
         public_key_file.write(public_key)
 
 
-from src.utility.crud.user import User
+from src.user import User
 
 def auth(lvl=None):
     def decorator(resolver):

@@ -1,4 +1,4 @@
-from api import dbo
+from api import dbo, logger
 from ariadne import ScalarType, ObjectType
 from bson import ObjectId
 from bson.dbref import DBRef
@@ -6,10 +6,12 @@ from src.test import users
 
 from src.nodes.object.object import Manager as OM
 from src.nodes.sketch.sketch import Manager as SM
+from src.nodes.user.user_manager import Manager as UM
 
 cached_references = {
     'object': OM,
-    'sketch': SM
+    'sketch': SM,
+    'users': UM,
 }
 
 ID = ScalarType("ID")
@@ -39,11 +41,13 @@ def ID_l_parser(ast):
 def dereference_field(obj, info):
     if isinstance(obj.get(info.field_name), DBRef):
         ref = obj[info.field_name]
-        if info.field_name in cached_references:
+        if ref.collection in cached_references:
             result = cached_references[ref.collection].get_item(_id=ref.id, user=users['dev'])
+            logger.debug(f"Reference for {ref.collection}:{ref.id} found in cache")
             if not isinstance(result, dict):
                 return result.__dict__
             return result
+        logger.debug(f"Reference for {ref.collection}:{ref.id} not found in cache, getting from database")
         return dbo.dbo.dereference(ref, projection={'password':0})
 
 def create_object_type_with_ref_resolver(name, fields):

@@ -3,8 +3,8 @@ from api.mutations import mutation
 from api.queries import query
 from bson import ObjectId
 from datetime import datetime
-from src.utility.crud.user import User
 from src.cache import CacheManager
+from src.user import User
 
 
 def ExecutarNoCache(cache_name: str, source_before: bool):
