@@ -88,29 +88,10 @@ class MongoOBJ:
     def insert_many(self, collection_name, data):
         return self.dbo[collection_name].insert_many(data)
 
-    def resolve_ref(self, cursor):
-        if isinstance(cursor, (dict, list, DBRef)):
-            if isinstance(cursor, DBRef):
-                return self.find_one(cursor.collection, {'_id':cursor.id}, ref=True)
-            for key, value in (cursor.items() if isinstance(cursor, dict) else enumerate(cursor)):
-                if key in ['object', 'matrix','sketch', 'variable', 'created_by', 'edited_by']:
-                    if isinstance(value, DBRef):
-                        cursor[key] = self.find_one(value.collection, {'_id':value.id}, ref=True)
-                    if isinstance(value, list):
-                        cursor[key] = map(self.resolve_ref, value)
-        return cursor
-
-
     def find_one(self, collection_name, query={}, data={}, **kwargs):
-        if kwargs.get('ref'):
-            pass
-            # return self.resolve_ref(dict(self.dbo[collection_name].find_one(query, data)))
         return self.dbo[collection_name].find_one(query, data)
 
     def find_many(self, collection_name, query={}, data={}, **kwargs):
-        if kwargs.get('ref'):
-            pass
-            # return [self.resolve_ref(dict(value)) for value in self.dbo[collection_name].find(query, data)]
         return self.dbo[collection_name].find(query, data)
 
     def update_one(self, collection_name, query, data, options={}):

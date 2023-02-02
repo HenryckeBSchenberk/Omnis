@@ -3,7 +3,8 @@ from src.nodes.node_manager import NodeManager
 from src.crud import SSPR
 from src.loader import loadConfig, LoadingMode
 from src.nodes.process.process import sample_process as Process
-from src.nodes.object.object import Manager as ObjectManager, Object
+from src.nodes.object.object import Manager as ObjectManager
+from src.nodes.sketch.sketch import Manager as SketchManager
 from src.end_points import Process as WebProcess
 from api import logger, dbo, auth
 from api.mutations import mutation
@@ -82,7 +83,7 @@ class ProcessObjectManager(SSPR, BaseManager):
 
     def load(self, _id=False, object_id=False, user=None):
         self.unload()
-        full_sketch = dbo.find_one('sketch', _id or self.process.sketch.id)
+        full_sketch = SketchManager.get_item(_id=_id or self.process.sketch.id, user=user)
 
         object_id = object_id or self.process.object.id
         obj = ObjectManager.get_item(_id=object_id, user=user)
